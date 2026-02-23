@@ -1,0 +1,55 @@
+/* Módulo: Categorías de Cliente */
+.categoria-cliente-main {
+    max-width: 100%;
+  }
+  
+  /* Botón principal */
+  .btn-roles-primary {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+    border: none;
+  }
+  
+  .btn-roles-primary:hover {
+    background-color: var(--color-accent);
+    color: var(--color-light);
+  }
+  
+  /* Encabezado modal */
+  .modal-header-roles {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary),
+      var(--color-trust)
+    );
+    color: var(--color-light);
+  }
+  
+  /* Hover tabla */
+  .categoria-cliente-main .table-hover tbody tr:hover {
+    background-color: rgba(166, 74, 201, 0.08);
+  }
+  
+  .card-header {
+    border-bottom: 1px solid #f1f1f1;
+  }
+  
+  .table thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+  }
+  
+  .table tbody td {
+    vertical-align: middle;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #f1f1f1;
+  }
+  
+  .categoria-cliente-main textarea {
+    resize: none;
+  }
+  

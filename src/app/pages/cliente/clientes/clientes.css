@@ -1,0 +1,42 @@
+.clientes-main {
+  max-width: 100%;
+}
+
+.btn-roles-primary {
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+}
+
+.btn-roles-primary:hover {
+  background-color: #6d28d9;
+}
+
+.modal-header-roles {
+  background: linear-gradient(135deg,#7c3aed,#4f46e5);
+  color: white;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(124,58,237,0.08);
+}
+
+.table thead th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.acciones-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modal-body input:disabled {
+  background-color: #f1f3f5;
+}
+
+textarea {
+  resize: none;
+}

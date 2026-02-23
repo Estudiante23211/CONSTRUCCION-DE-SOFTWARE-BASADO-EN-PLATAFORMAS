@@ -1,0 +1,11 @@
+.table-hover tbody tr:hover {
+    background-color: rgba(13,110,253,0.05);
+  }
+  
+  .table-danger {
+    background-color: rgba(220,53,69,0.15) !important;
+  }
+  
+  .badge {
+    font-size: 0.75rem;
+  }

@@ -1,0 +1,14 @@
+.kpi-card {
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  
+  canvas {
+    max-height: 300px;
+  }
+  
+  .card {
+    border-radius: 12px;
+  }

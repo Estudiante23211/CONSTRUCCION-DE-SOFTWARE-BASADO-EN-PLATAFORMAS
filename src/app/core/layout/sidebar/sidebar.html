@@ -1,0 +1,122 @@
+<!-- Botón móvil -->
+<button 
+  class="btn btn-dark d-md-none m-2"
+  type="button"
+  data-bs-toggle="offcanvas"
+  data-bs-target="#sidebarOffcanvas">
+  <i class="bi bi-list fs-3"></i>
+</button>
+
+<!-- Sidebar escritorio -->
+<div class="sidebar bg-dark text-white d-none d-md-flex flex-column">
+
+  <div class="sidebar-header text-center py-4">
+
+    <img 
+      src="assets/images/logo_Kalsan.png"
+      alt="Logo Kalsan Moda"
+      class="logo mb-3">
+  
+    <h5 class="fw-bold mb-0">KALSA'N MODA</h5>
+  
+  </div>
+
+  <ul class="nav nav-pills flex-column mb-auto px-3">
+
+    <!-- Inicio -->
+    <li class="nav-item">
+      <a routerLink=""
+         routerLinkActive="active-link"
+         class="nav-link text-white">
+        <i class="bi bi-house-door-fill me-2"></i> INICIO
+      </a>
+    </li>
+
+    <!-- Seguridad -->
+    <li>
+      <a class="nav-link text-white d-flex justify-content-between align-items-center"
+         data-bs-toggle="collapse"
+         href="#seguridadMenu"
+         role="button">
+        <span><i class="bi bi-shield-lock me-2"></i> SEGURIDAD</span>
+        <i class="bi bi-chevron-down transition-icon"></i>
+      </a>
+      <div class="collapse submenu" id="seguridadMenu">
+        <a routerLink="/seguridad/roles" routerLinkActive="active-link" class="nav-link text-white ps-4">Roles</a>
+        <a routerLink="/seguridad/usuarios" routerLinkActive="active-link" class="nav-link text-white ps-4">Usuarios</a>
+      </div>
+    </li>
+
+    <!-- Cliente -->
+    <li>
+      <a class="nav-link text-white d-flex justify-content-between align-items-center"
+         data-bs-toggle="collapse"
+         href="#clienteMenu">
+        <span><i class="bi bi-people me-2"></i> CLIENTE</span>
+        <i class="bi bi-chevron-down transition-icon"></i>
+      </a>
+      <div class="collapse submenu" id="clienteMenu">
+        <a routerLink="/cliente/tipo-cliente" routerLinkActive="active-link" class="nav-link text-white ps-4">Tipo Cliente</a>
+        <a routerLink="/cliente/categoria-cliente" routerLinkActive="active-link" class="nav-link text-white ps-4">Categoría de Clientes</a>      
+        <a routerLink="/cliente/tipo-identificacion" routerLinkActive="active-link" class="nav-link text-white ps-4">Tipo Identificación</a>
+        <a routerLink="/cliente/clientes" routerLinkActive="active-link" class="nav-link text-white ps-4">Clientes</a>
+      </div>
+    </li>
+
+    <!-- Producto -->
+    <li>
+      <a class="nav-link text-white d-flex justify-content-between align-items-center"
+         data-bs-toggle="collapse"
+         href="#productoMenu">
+        <span><i class="bi bi-box-seam me-2"></i> PRODUCTO</span>
+        <i class="bi bi-chevron-down transition-icon"></i>
+      </a>
+      <div class="collapse submenu" id="productoMenu">
+        <a routerLink="/producto/unidad-medida" routerLinkActive="active-link" class="nav-link text-white ps-4">Unidad Medida</a>
+        <a routerLink="/producto/tipo-moneda" routerLinkActive="active-link" class="nav-link text-white ps-4">Tipo de Moneda</a>
+        <a routerLink="/producto/categorias" routerLinkActive="active-link" class="nav-link text-white ps-4">Categorías</a>
+        <a routerLink="/producto/productos" routerLinkActive="active-link" class="nav-link text-white ps-4">Productos</a>
+      </div>
+    </li>
+
+    <!-- Pedidos -->
+    <li>
+      <a class="nav-link text-white d-flex justify-content-between align-items-center"
+         data-bs-toggle="collapse"
+         href="#pedidoMenu">
+        <span><i class="bi bi-cart me-2"></i> PEDIDOS</span>
+        <i class="bi bi-chevron-down transition-icon"></i>
+      </a>
+      <div class="collapse submenu" id="pedidoMenu">
+        <a routerLink="/pedidos/crear" routerLinkActive="active-link" class="nav-link text-white ps-4">Crear Pedido</a>
+        <a routerLink="/pedidos/solicitud-entrega" routerLinkActive="active-link" class="nav-link text-white ps-4">Solicitud Entrega</a>
+      </div>
+    </li>
+
+    <!-- Inventario -->
+    <li class="nav-item">
+      <a routerLink="/inventario"
+         routerLinkActive="active-link"
+         class="nav-link text-white">
+        <i class="bi bi-clipboard-data me-2"></i> INVENTARIO
+      </a>
+    </li>
+
+    <!-- Reportes -->
+    <li class="nav-item">
+      <a routerLink="/reportes"
+         routerLinkActive="active-link"
+         class="nav-link text-white">
+        <i class="bi bi-bar-chart-line me-2"></i> REPORTES
+      </a>
+    </li>
+
+  </ul>
+
+  <div class="mt-auto p-3">
+    <button class="btn btn-light w-100 logout-btn">
+      <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+    </button>    
+  </div>
+
+</div>

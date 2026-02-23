@@ -1,0 +1,75 @@
+.logo {
+    width: 80px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.logout-btn {
+    background-color: var(--color-light);
+    color: var(--color-primary);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+  
+.logout-btn:hover {
+    background-color: var(--color-accent);
+    color: var(--color-light);
+}
+
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      var(--color-primary),
+      var(--color-trust)
+    );
+    color: var(--color-light);
+    transition: all 0.3s ease;
+}
+  
+.nav-link {
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    color: var(--color-light);
+}
+  
+.nav-link:hover {
+    background-color: var(--color-accent);
+    color: var(--color-light);
+}
+  
+.active-link {
+    background-color: var(--color-trust) !important;
+    color: var(--color-light) !important;
+}
+  
+.submenu .nav-link {
+    font-size: 0.9rem;
+}
+  
+.transition-icon {
+    transition: transform 0.3s ease;
+}
+  
+a[aria-expanded="true"] .transition-icon {
+    transform: rotate(180deg);
+}
+  
+.collapse {
+    transition: height 0.3s ease;
+}
+
+
+  
+  
+  
+  
+  

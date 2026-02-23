@@ -1,0 +1,195 @@
+<main class="categorias-main container-fluid py-3">
+
+    <h2 class="mb-4 fw-bold">{{ tituloModulo }}</h2>
+  
+    <!-- ===================== -->
+<!-- FILTROS -->
+<!-- ===================== -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+  
+      <h5><i class="bi bi-funnel me-2"></i>Filtros de búsqueda</h5>
+  
+      <div class="row g-3">
+  
+        <div class="col-md-3">
+          <label class="form-label small">Nombre</label>
+          <input type="text"
+                 class="form-control form-control-sm"
+                 [(ngModel)]="filtroNombre">
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label small">Descripción</label>
+          <input type="text"
+                 class="form-control form-control-sm"
+                 [(ngModel)]="filtroDescripcion">
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label small">Estado</label>
+          <select class="form-select form-select-sm"
+                  [(ngModel)]="filtroEstado">
+            <option value="">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label small">Fecha Creación</label>
+          <input type="date"
+                 class="form-control form-control-sm"
+                 [(ngModel)]="filtroFecha">
+        </div>
+  
+      </div>
+  
+    </div>
+  </div>
+  
+  
+    <!-- ===================== -->
+    <!-- LISTADO -->
+    <!-- ===================== -->
+    <div class="card shadow-sm">
+  
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Listado de Categorías</h5>
+  
+        <button class="btn btn-primary"
+                (click)="abrirNuevo()">
+          <i class="bi bi-plus-lg me-2"></i>Crear Categoría
+        </button>
+      </div>
+  
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+  
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Usuario</th>
+              <th>Fecha</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+  
+            @for (c of categoriasFiltradas; track c.id) {
+  
+              <tr>
+                <td>{{ c.nombre }}</td>
+                <td>{{ c.descripcion }}</td>
+  
+                <td>
+                  <span class="badge"
+                        [class.bg-success]="c.estado === 'Activo'"
+                        [class.bg-danger]="c.estado === 'Inactivo'">
+                    {{ c.estado }}
+                  </span>
+                </td>
+  
+                <td>{{ c.usuarioCreacion }}</td>
+                <td>{{ c.fechaCreacion }}</td>
+  
+                <td class="text-center">
+                  <div class="acciones-container">
+  
+                    <button class="btn btn-sm btn-outline-primary"
+                            (click)="abrirEditar(c)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+  
+                    <button class="btn btn-sm"
+                            [class.btn-outline-warning]="c.estado === 'Activo'"
+                            [class.btn-outline-success]="c.estado === 'Inactivo'"
+                            (click)="activarDesactivar(c)">
+                      <i class="bi"
+                         [class.bi-toggle-on]="c.estado === 'Activo'"
+                         [class.bi-toggle-off]="c.estado === 'Inactivo'">
+                      </i>
+                    </button>
+  
+                  </div>
+                </td>
+  
+              </tr>
+  
+            } @empty {
+  
+              <tr>
+                <td colspan="6" class="text-center py-4 text-muted">
+                  No hay categorías registradas.
+                </td>
+              </tr>
+  
+            }
+  
+          </tbody>
+  
+        </table>
+      </div>
+    </div>
+  
+    <!-- BOTÓN OCULTO -->
+    <button #btnAbrirModal type="button" class="d-none"
+            data-bs-toggle="modal"
+            data-bs-target="#modalCategoria"></button>
+  
+    <!-- ===================== -->
+    <!-- MODAL -->
+    <!-- ===================== -->
+    <div class="modal fade" id="modalCategoria">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+  
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">{{ modalTitulo }}</h5>
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"></button>
+          </div>
+  
+          <div class="modal-body">
+  
+            <div class="mb-3">
+              <label class="form-label">
+                Nombre <span class="text-danger">*</span>
+              </label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="form.nombre">
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Descripción <span class="text-danger">*</span></label>
+              <textarea class="form-control"
+                        rows="3"
+                        [(ngModel)]="form.descripcion">
+              </textarea>
+            </div>
+  
+          </div>
+  
+          <div class="modal-footer justify-content-center">
+            <button class="btn btn-primary px-4"
+                    (click)="guardar()">
+              <i class="bi bi-check-lg me-1"></i>Guardar
+            </button>
+  
+            <button class="btn btn-outline-danger px-4"
+                    data-bs-dismiss="modal"><i class="bi bi-x-square"></i>
+              Cancelar
+            </button>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  

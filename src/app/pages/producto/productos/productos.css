@@ -1,0 +1,54 @@
+.productos-main {
+    max-width: 100%;
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+  }
+  
+  .table thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+  }
+  
+  .acciones-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .acciones-container .btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .productos-main textarea {
+    resize: none;
+  }
+
+  /* HEADER MODAL CORPORATIVO */
+.modal-header-roles {
+  background: linear-gradient(135deg, #0d6efd, #0a58ca);
+  color: white;
+}
+
+/* Inputs detalle */
+.modal-body input:disabled,
+.modal-body textarea:disabled {
+  background-color: #f1f3f5;
+  opacity: 1;
+}
+
+/* Badge estado */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+  

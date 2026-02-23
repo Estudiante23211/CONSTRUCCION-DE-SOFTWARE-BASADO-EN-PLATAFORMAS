@@ -1,0 +1,101 @@
+  <div class="container-fluid dashboard-container">
+
+    <!-- HEADER EJECUTIVO -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+      <div>
+        <h2 class="fw-bold mb-1">Inicio</h2>
+      </div>
+      <div class="text-end">
+        <small class="text-muted">Fecha</small>
+        <div class="fw-semibold">{{ today | date:'longDate' }}</div>
+      </div>
+    </div>
+  
+    <!-- KPI EJECUTIVOS -->
+    <div class="row g-4 mb-5">
+
+      <!-- Clientes -->
+      <div class="col-md-3">
+        <div class="kpi-card d-flex justify-content-between align-items-center">
+          <div>
+            <div class="kpi-title">Clientes Registrados</div>
+            <div class="kpi-value text-dark">0</div>
+            <div class="kpi-sub">Clientes activos</div>
+          </div>
+          <div class="kpi-icon bg-purple">
+            <i class="bi bi-people-fill"></i>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Pedidos -->
+      <div class="col-md-3">
+        <div class="kpi-card d-flex justify-content-between align-items-center">
+          <div>
+            <div class="kpi-title">Pedidos</div>
+            <div class="kpi-value text-dark">0</div>
+            <div class="kpi-sub">Este mes</div>
+          </div>
+          <div class="kpi-icon bg-blue">
+            <i class="bi bi-cart-fill"></i>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Productos Críticos -->
+      <div class="col-md-3">
+        <div class="kpi-card d-flex justify-content-between align-items-center">
+          <div>
+            <div class="kpi-title">Productos Críticos</div>
+            <div class="kpi-value text-dark">0</div>
+            <div class="kpi-sub">Bajo stock</div>
+          </div>
+          <div class="kpi-icon bg-pink">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Reportes -->
+      <div class="col-md-3">
+        <div class="kpi-card d-flex justify-content-between align-items-center">
+          <div>
+            <div class="kpi-title">Reportes</div>
+            <div class="kpi-value text-dark">0</div>
+            <div class="kpi-sub">Generados</div>
+          </div>
+          <div class="kpi-icon bg-purple">
+            <i class="bi bi-file-earmark-bar-graph-fill"></i>
+          </div>
+        </div>
+      </div>
+    
+    </div>    
+  
+    <!-- GRÁFICOS EJECUTIVOS -->
+    <div class="row g-4">
+  
+      <div class="col-md-6">
+        <div class="chart-card">
+          <h5 class="mb-4">Estado de Pedidos</h5>
+          <canvas baseChart
+            [data]="pedidoChartData"
+            [type]="pedidoChartType">
+          </canvas>
+        </div>
+      </div>
+  
+      <div class="col-md-6">
+        <div class="chart-card">
+          <h5 class="mb-4">Nivel de Inventario</h5>
+          <canvas baseChart
+            [data]="inventarioChartData"
+            [type]="inventarioChartType">
+          </canvas>
+        </div>
+      </div>
+  
+    </div>
+  
+  </div>
+  

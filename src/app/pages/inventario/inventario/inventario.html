@@ -1,0 +1,170 @@
+<main class="container py-4">
+
+    <h2 class="fw-bold mb-4">{{ tituloModulo }}</h2>
+  
+    <!-- FILTROS -->
+    <div class="card p-3 mb-4 shadow-sm">
+      <div class="row">
+  
+        <div class="col-md-4">
+          <select class="form-select" [(ngModel)]="filtroProducto">
+            <option [ngValue]="0">Todos los productos</option>
+            <option *ngFor="let p of productos" [ngValue]="p.id">
+              {{ p.nombre }}
+            </option>
+          </select>
+        </div>
+  
+        <div class="col-md-4">
+          <select class="form-select" [(ngModel)]="filtroEstado">
+            <option value="">Todos los estados</option>
+            <option>Activo</option>
+            <option>Inactivo</option>
+          </select>
+        </div>
+  
+        <div class="col-md-4">
+          <input type="date" class="form-control" [(ngModel)]="filtroFecha">
+        </div>
+  
+      </div>
+    </div>
+  
+    <div class="text-end mb-3">
+      <button class="btn btn-primary" (click)="abrirNuevo()">
+        Nuevo Inventario
+      </button>
+    </div>
+  
+    <!-- LISTADO -->
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Producto</th>
+              <th>Unidad</th>
+              <th>Inicial</th>
+              <th>Actual</th>
+              <th>Alerta</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <tr *ngFor="let i of inventariosFiltrados"
+                [class.table-danger]="stockBajo(i)">
+  
+              <td>{{ i.productoNombre }}</td>
+              <td>{{ i.unidadMedida }}</td>
+              <td>{{ i.cantidadInicial }}</td>
+              <td>
+                {{ i.cantidadActual }}
+                <span *ngIf="stockBajo(i)" class="badge bg-danger ms-2">
+                  Stock Bajo
+                </span>
+              </td>
+              <td>{{ i.alertaMinima }}</td>
+              <td>
+                <span class="badge"
+                  [class.bg-success]="i.estado==='Activo'"
+                  [class.bg-secondary]="i.estado==='Inactivo'">
+                  {{ i.estado }}
+                </span>
+              </td>
+              <td>{{ i.fechaCreacion }}</td>
+              <td class="text-center">
+  
+                <button class="btn btn-sm btn-outline-info me-1"
+                  (click)="verDetalle(i)">
+                  Ver
+                </button>
+  
+                <button class="btn btn-sm btn-outline-primary me-1"
+                  (click)="abrirEditar(i)">
+                  Editar
+                </button>
+  
+                <button class="btn btn-sm btn-outline-danger"
+                  (click)="eliminar(i)">
+                  Inactivar
+                </button>
+  
+              </td>
+            </tr>
+          </tbody>
+  
+        </table>
+      </div>
+    </div>
+  
+    <!-- BOTONES MODALES -->
+    <button #btnModal class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#modalInventario"></button>
+  
+    <button #btnModalDetalle class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#modalDetalle"></button>
+  
+    <!-- MODAL CREAR / EDITAR -->
+    <div class="modal fade" id="modalInventario">
+      <div class="modal-dialog">
+        <div class="modal-content p-3">
+          <h5>{{ modalTitulo }}</h5>
+  
+          <select class="form-select mb-2"
+            [(ngModel)]="form.idProducto">
+            <option [ngValue]="0">Seleccione producto</option>
+            <option *ngFor="let p of productos"
+              [ngValue]="p.id">
+              {{ p.nombre }}
+            </option>
+          </select>
+  
+          <select class="form-select mb-2"
+            [(ngModel)]="form.unidadMedida">
+            <option value="">Seleccione unidad</option>
+            <option *ngFor="let u of unidadesMedida">
+              {{ u }}
+            </option>
+          </select>
+  
+          <input type="number" class="form-control mb-2"
+            placeholder="Cantidad Inicial"
+            [(ngModel)]="form.cantidadInicial" min="0">
+  
+          <input type="number" class="form-control mb-2"
+            placeholder="Cantidad Actual"
+            [(ngModel)]="form.cantidadActual" min="0">
+  
+          <input type="number" class="form-control mb-3"
+            placeholder="Alerta mínima"
+            [(ngModel)]="form.alertaMinima" min="0">
+  
+          <button class="btn btn-success w-100"
+            (click)="guardar()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- MODAL DETALLE -->
+    <div class="modal fade" id="modalDetalle">
+      <div class="modal-dialog">
+        <div class="modal-content p-3">
+          <h5>Detalle Inventario</h5>
+  
+          <p><strong>Producto:</strong> {{ inventarioDetalle?.productoNombre }}</p>
+          <p><strong>Unidad:</strong> {{ inventarioDetalle?.unidadMedida }}</p>
+          <p><strong>Inicial:</strong> {{ inventarioDetalle?.cantidadInicial }}</p>
+          <p><strong>Actual:</strong> {{ inventarioDetalle?.cantidadActual }}</p>
+          <p><strong>Alerta:</strong> {{ inventarioDetalle?.alertaMinima }}</p>
+          <p><strong>Estado:</strong> {{ inventarioDetalle?.estado }}</p>
+  
+        </div>
+      </div>
+    </div>
+  
+  </main>

@@ -1,0 +1,182 @@
+<main class="tipo-identificacion-main container-fluid py-3">
+
+    <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>  
+  
+    <!-- FILTROS -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h6 class="card-title text-muted mb-3">
+            <h5><i class="bi bi-funnel me-2"></i>Filtros de búsqueda</h5>
+        </h6>          
+  
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label small">Nombre</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="filtroNombre"
+                   placeholder="Buscar por nombre...">
+          </div>
+  
+          <div class="col-md-4">
+            <label class="form-label small">Estado</label>
+            <select class="form-select form-select-sm"
+                    [(ngModel)]="filtroEstado">
+              <option value="">Todos</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+  
+          <div class="col-md-4">
+            <label class="form-label small">Fecha de creación</label>
+            <input type="date"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="filtroFecha">
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- LISTADO -->
+    <div class="card shadow-sm">
+  
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+            <div>
+              <h5 class="mb-0 fw-semibold">Listado de Tipos de Identificación</h5>
+            </div>
+          
+            <button
+              type="button"
+              class="btn btn-roles-primary"
+              (click)="abrirNuevo()"
+            >
+              <i class="bi bi-plus-lg me-2"></i>Crear Tipo de Identificación
+            </button>
+          
+          </div>          
+  
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Usuario</th>
+              <th>Fecha</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            @for (tipo of tiposFiltrados; track tipo.id) {
+              <tr>
+                <td class="fw-medium">{{ tipo.nombre }}</td>
+                <td>{{ tipo.descripcion }}</td>
+                <td>
+                  <span class="badge px-3 py-2"
+                        [class.bg-success]="tipo.estado === 'Activo'"
+                        [class.bg-danger]="tipo.estado === 'Inactivo'">
+                    {{ tipo.estado }}
+                  </span>
+                </td>
+                <td>{{ tipo.usuarioCreador }}</td>
+                <td>{{ tipo.fechaCreacion }}</td>
+  
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-primary me-1"
+                          (click)="abrirEditar(tipo)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+  
+                  <button class="btn btn-sm"
+                          [class.btn-outline-warning]="tipo.estado === 'Activo'"
+                          [class.btn-outline-success]="tipo.estado === 'Inactivo'"
+                          (click)="activarDesactivar(tipo)">
+                    <i class="bi"
+                       [class.bi-toggle-on]="tipo.estado === 'Activo'"
+                       [class.bi-toggle-off]="tipo.estado === 'Inactivo'">
+                    </i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  No hay registros disponibles.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+  
+    </div>
+  
+    <!-- BOTÓN OCULTO -->
+    <button #btnAbrirModal
+            type="button"
+            class="d-none"
+            data-bs-toggle="modal"
+            data-bs-target="#modalTipo">
+    </button>
+  
+    <!-- MODAL -->
+    <div class="modal fade"
+         id="modalTipo"
+         tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+  
+          <div class="modal-header modal-header-roles">
+            <h5 class="modal-title text-white">{{ modalTitulo }}</h5>
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal">
+            </button>
+          </div>
+  
+          <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Nombre<small style="color: red;">*</small></label>
+              <input type="text"
+                     class="form-control"
+                     placeholder="NIT"
+                     [(ngModel)]="form.nombre">
+            </div>
+  
+            <div class="mb-3">
+                <label class="form-label">Descripción<small style="color: red;">*</small></label>
+              <textarea class="form-control"
+                        rows="3"
+                        placeholder="Número de Identificación Tributaria"
+                        [(ngModel)]="form.descripcion">
+              </textarea>
+            </div>
+          </div>
+  
+          <div class="modal-footer justify-content-center py-3">        
+            <button
+              type="button"
+              class="btn btn-roles-primary px-4"
+              (click)="guardar()"
+            >
+                <i class="bi bi-check-square"></i> Guardar
+            </button>
+            <button
+                type="button"
+                class="btn btn-outline-danger px-4"
+                data-bs-dismiss="modal"
+          >
+            <i class="bi bi-x-square"></i> Cancelar   
+          </button>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  

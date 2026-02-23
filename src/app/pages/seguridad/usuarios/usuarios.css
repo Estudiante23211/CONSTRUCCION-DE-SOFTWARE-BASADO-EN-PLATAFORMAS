@@ -1,0 +1,43 @@
+.usuarios-main {
+    max-width: 100%;
+  }
+  
+  .btn-roles-primary {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+    border: none;
+  }
+  
+  .btn-roles-primary:hover {
+    background-color: var(--color-accent);
+    color: var(--color-light);
+  }
+  
+  .modal-header-roles {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary),
+      var(--color-trust)
+    );
+    color: var(--color-light);
+  }
+  
+  .usuarios-main .table-hover tbody tr:hover {
+    background-color: rgba(166, 74, 201, 0.08);
+  }
+  
+  .card-header {
+    border-bottom: 1px solid #f1f1f1;
+  }
+  
+  .table thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #f1f1f1;
+  }
+  

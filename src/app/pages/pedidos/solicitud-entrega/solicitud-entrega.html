@@ -1,0 +1,138 @@
+<main class="container py-4">
+
+    <h2 class="fw-bold mb-4">{{ tituloModulo }}</h2>
+  
+    <div class="text-end mb-3">
+      <button class="btn btn-primary" (click)="abrirCrear()">
+        Nueva Solicitud
+      </button>
+    </div>
+  
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Estado</th>
+              <th>Entregado Por</th>
+              <th>Recibido Por</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <tr *ngFor="let s of solicitudes">
+              <td>#{{ s.idPedido }}</td>
+              <td>{{ s.cliente }}</td>
+              <td>
+                <span class="badge"
+                  [class.bg-warning]="s.estado==='Pendiente'"
+                  [class.bg-primary]="s.estado==='En ruta'"
+                  [class.bg-success]="s.estado==='Entregado'"
+                  [class.bg-danger]="s.estado==='Cancelado'">
+                  {{ s.estado }}
+                </span>
+              </td>
+              <td>{{ s.entregadoPor || '-' }}</td>
+              <td>{{ s.recibidoPor || '-' }}</td>
+              <td class="text-center">
+  
+                <button class="btn btn-sm btn-outline-primary me-1"
+                  *ngIf="s.estado==='Pendiente'"
+                  (click)="abrirDespacho(s)">
+                  Despachar
+                </button>
+  
+                <button class="btn btn-sm btn-outline-success me-1"
+                  *ngIf="s.estado==='En ruta'"
+                  (click)="abrirEntrega(s)">
+                  Entregar
+                </button>
+  
+                <button class="btn btn-sm btn-outline-danger"
+                  *ngIf="s.estado!=='Entregado'"
+                  (click)="cancelarSolicitud(s)">
+                  Cancelar
+                </button>
+  
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- MODALES SIMPLIFICADOS -->
+    <button #btnModalCrear class="d-none" data-bs-toggle="modal" data-bs-target="#modalCrear"></button>
+    <button #btnModalDespacho class="d-none" data-bs-toggle="modal" data-bs-target="#modalDespacho"></button>
+    <button #btnModalEntrega class="d-none" data-bs-toggle="modal" data-bs-target="#modalEntrega"></button>
+  
+    <!-- Modal Crear -->
+    <div class="modal fade" id="modalCrear">
+      <div class="modal-dialog">
+        <div class="modal-content p-3">
+          <h5>Crear Solicitud</h5>
+  
+          <select class="form-select mb-2" [(ngModel)]="formCrear.idPedido">
+            <option [ngValue]="0">Seleccione pedido</option>
+            <option *ngFor="let p of pedidosDisponibles" [ngValue]="p.id">
+              Pedido #{{p.id}} - {{p.cliente}}
+            </option>
+          </select>
+  
+          <input type="date" class="form-control mb-2"
+            [(ngModel)]="formCrear.fechaEstimada">
+  
+          <textarea class="form-control mb-3"
+            placeholder="Observación"
+            [(ngModel)]="formCrear.observacion"></textarea>
+  
+          <button class="btn btn-success w-100"
+            (click)="guardarSolicitud()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Modal Despacho -->
+    <div class="modal fade" id="modalDespacho">
+      <div class="modal-dialog">
+        <div class="modal-content p-3">
+          <h5>Registrar Despacho</h5>
+  
+          <input #entregado type="text"
+            class="form-control mb-3"
+            placeholder="Entregado por">
+  
+          <button class="btn btn-primary w-100"
+            (click)="confirmarDespacho(entregado.value)">
+            Confirmar Despacho
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Modal Entrega -->
+    <div class="modal fade" id="modalEntrega">
+      <div class="modal-dialog">
+        <div class="modal-content p-3">
+          <h5>Registrar Entrega</h5>
+  
+          <input #recibido type="text"
+            class="form-control mb-2"
+            placeholder="Recibido por">
+  
+          <input #doc type="number"
+            class="form-control mb-3"
+            placeholder="Documento" min="0">
+  
+          <button class="btn btn-success w-100"
+            (click)="confirmarEntrega(recibido.value, doc.value)">
+            Confirmar Entrega
+          </button>
+        </div>
+      </div>
+    </div>
+  
+  </main>

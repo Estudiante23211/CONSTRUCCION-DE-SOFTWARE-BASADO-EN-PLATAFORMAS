@@ -1,0 +1,67 @@
+<main class="container py-4">
+
+    <h2 class="fw-bold mb-4">{{ tituloModulo }}</h2>
+  
+    <!-- FILTROS -->
+    <div class="card p-3 mb-4 shadow-sm">
+      <div class="row">
+  
+        <div class="col-md-4">
+          <label>Fecha Inicio</label>
+          <input type="date" class="form-control" [(ngModel)]="fechaInicio">
+        </div>
+  
+        <div class="col-md-4">
+          <label>Fecha Fin</label>
+          <input type="date" class="form-control" [(ngModel)]="fechaFin">
+        </div>
+  
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-success w-100"
+            (click)="exportarExcel()">
+            Exportar a Excel
+          </button>
+        </div>
+  
+      </div>
+    </div>
+  
+    <!-- KPIs -->
+    <div class="row mb-4">
+  
+      <div class="col-md-6">
+        <div class="card kpi-card bg-success text-white">
+          <h5>Total Ventas</h5>
+          <h2>${{ totalVentas | number }}</h2>
+        </div>
+      </div>
+  
+      <div class="col-md-6">
+        <div class="card kpi-card bg-danger text-white">
+          <h5>Productos Bajo Stock</h5>
+          <h2>{{ productosStockBajo.length }}</h2>
+        </div>
+      </div>
+  
+    </div>
+  
+    <!-- GRAFICAS -->
+    <div class="row">
+  
+      <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+          <h5>Ventas por Cliente</h5>
+          <canvas id="ventasChart"></canvas>
+        </div>
+      </div>
+  
+      <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+          <h5>Distribución Inventario</h5>
+          <canvas id="stockChart"></canvas>
+        </div>
+      </div>
+  
+    </div>
+  
+  </main>

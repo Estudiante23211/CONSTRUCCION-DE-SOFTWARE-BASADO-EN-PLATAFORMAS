@@ -1,0 +1,284 @@
+<main class="usuarios-main container-fluid py-3">
+
+    <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>
+  
+    <!-- ===================== -->
+    <!-- FILTROS -->
+    <!-- ===================== -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h6 class="card-title text-muted mb-3">
+          <h5><i class="bi bi-funnel me-2"></i>Filtros de búsqueda</h5>
+        </h6>
+  
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label small">Identificación</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="filtroIdentificacion"
+                   placeholder="Buscar por identificación...">
+          </div>
+  
+          <div class="col-md-4">
+            <label class="form-label small">Nombre</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="filtroNombre"
+                   placeholder="Buscar por nombre...">
+          </div>
+  
+          <div class="col-md-4">
+            <label class="form-label small">Fecha de registro</label>
+            <input type="date"
+                   class="form-control form-control-sm"
+                   [(ngModel)]="filtroFecha">
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- ===================== -->
+    <!-- LISTADO -->
+    <!-- ===================== -->
+    <div class="card shadow-sm">
+  
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+  
+        <div>
+          <h5 class="mb-0 fw-semibold">Listado de Usuarios</h5>
+        </div>
+  
+        <button type="button"
+                class="btn btn-roles-primary"
+                (click)="abrirNuevo()">
+          <i class="bi bi-plus-lg me-2"></i>Crear Usuario
+        </button>
+  
+      </div>
+  
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+  
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>celular</th>
+              <th>Estado</th>
+              <th>Usuario creador</th>
+              <th>Fecha creación</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            @for (usuario of usuariosFiltrados; track usuario.id) {
+              <tr>
+                <td class="fw-medium">{{ usuario.nombre }}</td>
+                <td>{{ usuario.apellido }}</td>
+                <td>{{ usuario.celular }}</td>
+  
+                <td>
+                  <span class="badge px-3 py-2"
+                        [class.bg-success]="usuario.estado === 'Activo'"
+                        [class.bg-danger]="usuario.estado === 'Inactivo'">
+                    {{ usuario.estado }}
+                  </span>
+                </td>
+  
+                <td>{{ usuario.usuarioCreador }}</td>
+                <td>{{ usuario.fechaCreacion }}</td>
+  
+                <td class="text-end">
+  
+                  <!-- DETALLE -->
+                  <button class="btn btn-sm btn-outline-secondary me-1"
+                          title="Detalle"
+                          (click)="abrirDetalle(usuario)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+  
+                  <!-- EDITAR -->
+                  <button class="btn btn-sm btn-outline-primary me-1"
+                          title="Editar"
+                          (click)="abrirEditar(usuario)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+  
+                  <!-- ACTIVAR / INACTIVAR -->
+                  <button class="btn btn-sm"
+                          [class.btn-outline-warning]="usuario.estado === 'Activo'"
+                          [class.btn-outline-success]="usuario.estado === 'Inactivo'"
+                          (click)="activarDesactivar(usuario)">
+                    <i class="bi"
+                       [class.bi-toggle-on]="usuario.estado === 'Activo'"
+                       [class.bi-toggle-off]="usuario.estado === 'Inactivo'">
+                    </i>
+                  </button>
+  
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                  No hay usuarios registrados.
+                </td>
+              </tr>
+            }
+          </tbody>
+  
+        </table>
+      </div>
+    </div>
+  
+    <!-- ===================== -->
+    <!-- BOTÓN OCULTO MODAL -->
+    <!-- ===================== -->
+    <button #btnAbrirModal
+            type="button"
+            class="d-none"
+            data-bs-toggle="modal"
+            data-bs-target="#modalUsuario">
+    </button>
+  
+    <!-- ===================== -->
+    <!-- MODAL -->
+    <!-- ===================== -->
+    <div class="modal fade"
+         id="modalUsuario"
+         tabindex="-1">
+  
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+  
+          <!-- HEADER -->
+          <div class="modal-header modal-header-roles">
+            <h5 class="modal-title text-white">
+              {{ modalTitulo }}
+            </h5>
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal">
+            </button>
+          </div>
+  
+          <!-- BODY -->
+          <div class="modal-body">
+  
+            <div class="row g-3">
+  
+              <div class="col-md-6">
+                  <label class="form-label">Rol<small style="color: red;">*</small></label>
+                  <select class="form-select"
+                        [(ngModel)]="form.rol"
+                        [disabled]="modoDetalle">
+                  <option value="" disabled>Seleccione...</option>
+                  @for (rol of roles; track rol) {
+                    <option [value]="rol">{{ rol }}</option>
+                  }
+                </select>
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Tipo Identificación<small style="color: red;">*</small></label>
+                <select class="form-select"
+                        [(ngModel)]="form.tipoIdentificacion"
+                        [disabled]="modoDetalle">
+                  <option value="" disabled>Seleccione...</option>
+                  @for (tipo of tiposIdentificacion; track tipo) {
+                    <option [value]="tipo">{{ tipo }}</option>
+                  }
+                </select>
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Identificación<small style="color: red;">*</small></label>
+                <input type="number"
+                       class="form-control"
+                       [(ngModel)]="form.identificacion"
+                       [disabled]="modoDetalle"
+                       min="0">
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Nombre<small style="color: red;">*</small></label>
+                <input type="text"
+                       class="form-control"
+                       [(ngModel)]="form.nombre"
+                       [disabled]="modoDetalle">
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Apellido<small style="color: red;">*</small></label>
+                <input type="text"
+                       class="form-control"
+                       [(ngModel)]="form.apellido"
+                       [disabled]="modoDetalle">
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Correo<small style="color: red;">*</small></label>
+                <input type="email"
+                       class="form-control"
+                       [(ngModel)]="form.correo"
+                       [disabled]="modoDetalle">
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Celular<small style="color: red;">*</small></label>
+                <input type="text"
+                       class="form-control"
+                       [(ngModel)]="form.celular"
+                       [disabled]="modoDetalle">
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Usuario<small style="color: red;">*</small></label>
+                <input type="text"
+                       class="form-control"
+                       [(ngModel)]="form.usuario"
+                       [disabled]="modoDetalle || editId !== null">
+              </div>
+  
+              <!-- SOLO EN CREACIÓN -->
+              @if (!modoDetalle && editId === null) {
+                <div class="col-md-6">
+                  <label class="form-label">Clave Generada</label>
+                  <input type="text"
+                         class="form-control"
+                         [value]="form.clave"
+                         disabled>
+                </div>
+              }
+  
+            </div>
+          </div>
+  
+          <!-- FOOTER -->
+          <div class="modal-footer justify-content-center py-3">
+  
+            @if (!modoDetalle) {
+              <button type="button"
+                      class="btn btn-roles-primary px-4"
+                      (click)="guardar()">
+                <i class="bi bi-check-square"></i> Guardar
+              </button>
+            }
+  
+            <button type="button"
+                    class="btn btn-outline-danger px-4"
+                    data-bs-dismiss="modal">
+              <i class="bi bi-x-square"></i>
+              {{ modoDetalle ? 'Cerrar' : 'Cancelar' }}
+            </button>
+  
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  
