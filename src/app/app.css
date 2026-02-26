@@ -55,6 +55,12 @@
     min-height: 100vh;
   }
 
+  main.login-main {
+    min-height: 100vh;
+    padding: 0;
+    background: transparent;
+  }
+
   main {
     padding: 30px 40px;
     background: linear-gradient(180deg, #f8f9fa 0%, #eef1f5 100%);

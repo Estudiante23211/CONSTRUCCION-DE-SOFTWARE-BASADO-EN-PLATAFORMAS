@@ -89,7 +89,6 @@
       </a>
       <div class="collapse submenu" id="pedidoMenu">
         <a routerLink="/pedidos/crear" routerLinkActive="active-link" class="nav-link text-white ps-4">Crear Pedido</a>
-        <a routerLink="/pedidos/solicitud-entrega" routerLinkActive="active-link" class="nav-link text-white ps-4">Solicitud Entrega</a>
       </div>
     </li>
 
@@ -114,7 +113,7 @@
   </ul>
 
   <div class="mt-auto p-3">
-    <button class="btn btn-light w-100 logout-btn">
+    <button class="btn btn-light w-100 logout-btn" (click)="cerrarSesion()">
       <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
     </button>    
   </div>

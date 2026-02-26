@@ -1,112 +1,136 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
 
+  // 🔓 LOGIN (PÚBLICO)
   {
-    path: '',
+    path: 'login',
     loadComponent: () =>
-      import('./pages/dashboard/dashboard')
-        .then(m => Object.values(m)[0] as any)
+      import('./pages/auth/login/login')
+        .then(m => m.Login)
   },
 
+  // 🔐 DASHBOARD
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard')
+        .then(m => m.Dashboard)
+  },
+
+  // 🔐 SEGURIDAD
   {
     path: 'seguridad/roles',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/seguridad/roles/roles')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.Roles)
   },
 
   {
     path: 'seguridad/usuarios',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/seguridad/usuarios/usuarios')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.Usuarios)
   },
 
+  // 🔐 CLIENTES
   {
     path: 'cliente/tipo-cliente',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/cliente/tipo-client/tipo-client')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.TipoClient)
   },
 
   {
     path: 'cliente/categoria-cliente',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/cliente/categoria-cliente/categoria-cliente')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.CategoriaCliente)
   },
 
   {
     path: 'cliente/tipo-identificacion',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/cliente/tipo-identificacion/tipo-identificacion')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.TipoIdentificacion)
   },
 
   {
     path: 'cliente/clientes',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/cliente/clientes/clientes')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.Clientes)
   },
 
+  // 🔐 PRODUCTOS
   {
     path: 'producto/unidad-medida',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/producto/unidad-medida/unidad-medida')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.UnidadMedida)
   },
 
   {
     path: 'producto/tipo-moneda',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/producto/tipo-moneda/tipo-moneda')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.TipoMoneda)
   },
 
   {
     path: 'producto/categorias',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/producto/categorias/categorias')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.Categorias)
   },
 
   {
     path: 'producto/productos',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/producto/productos/productos')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.Productos)
   },
 
+  // 🔐 PEDIDOS
   {
     path: 'pedidos/crear',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/pedidos/crear-pedido/crear-pedido')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.CrearPedido)
   },
 
-  {
-    path: 'pedidos/solicitud-entrega',
-    loadComponent: () =>
-      import('./pages/pedidos/solicitud-entrega/solicitud-entrega')
-        .then(m => Object.values(m)[0] as any)
-  },
-
+  // 🔐 INVENTARIO
   {
     path: 'inventario',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/inventario/inventario/inventario')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.Inventario)
   },
 
+  // 🔐 REPORTES
   {
     path: 'reportes',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/reportes/reportes/reportes')
-        .then(m => Object.values(m)[0] as any)
+        .then(m => m.Reportes)
   },
 
+  // ❌ Ruta no encontrada
   { path: '**', redirectTo: '' }
 
 ];

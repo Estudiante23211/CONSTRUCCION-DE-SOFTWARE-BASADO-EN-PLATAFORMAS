@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 
 import { Sidebar } from './core/layout/sidebar/sidebar';
 import { Footer } from './core/layout/footer/footer';
@@ -15,5 +15,10 @@ import { Footer } from './core/layout/footer/footer';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
+export class App {
+  private router = inject(Router);
 
-export class App {}
+  get isLoginRoute(): boolean {
+    return this.router.url.includes('/login');
+  }
+}
