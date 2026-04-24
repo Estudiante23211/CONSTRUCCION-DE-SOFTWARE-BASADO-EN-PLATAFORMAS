@@ -4,9 +4,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    "baseUrl": ".",
     "types": [
       "vitest/globals"
-    ]
+    ],
+    "paths": {
+      "@lib/validaciones": ["src/lib/validaciones/index.ts"],
+      "@lib/validaciones/*": ["src/lib/validaciones/*"]
+    }
   },
   "include": [
     "src/**/*.d.ts",

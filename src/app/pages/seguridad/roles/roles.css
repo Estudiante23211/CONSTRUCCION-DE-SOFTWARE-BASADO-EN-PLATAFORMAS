@@ -52,3 +52,77 @@
 .roles-main textarea {
   resize: none;
 }
+
+.acciones-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.roles-main .modal-body input:disabled,
+.roles-main .modal-body textarea:disabled {
+  background-color: #f1f3f5;
+}
+
+/* Detalle del rol (Tarea 1): solo texto, sin avatar */
+.roles-detalle-body {
+  padding-top: 0.5rem;
+}
+
+.roles-detalle-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #868e96;
+  margin-bottom: 0.35rem;
+}
+
+.roles-detalle-valor {
+  font-weight: 600;
+  color: #212529;
+  font-size: 1rem;
+}
+
+.roles-detalle-descripcion {
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+.roles-modal-detalle .modal-footer {
+  padding-top: 0;
+}
+
+/* Contador de caracteres (Tarea 5): inferior derecha del campo */
+.roles-char-counter {
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+/* Paginación: separada del cuerpo de la tabla */
+.roles-pagination-footer {
+  margin-top: 0.75rem;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  border-top: 1px solid #dee2e6 !important;
+}
+
+.roles-main .roles-pagination-footer .btn-sm {
+  min-width: 2.25rem;
+}
+
+.roles-page-size-select {
+  width: auto;
+  min-width: 4.5rem;
+}
+
+.roles-pagination-page-size {
+  flex-shrink: 0;
+}
+
+/* Modal detalle: ancho acorde al contenido (sin modal-lg) */
+.roles-modal-detalle-dialog {
+  max-width: min(32rem, calc(100% - 2rem));
+}
+

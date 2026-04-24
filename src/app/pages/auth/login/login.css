@@ -102,6 +102,17 @@
   transition: border-color 0.2s;
 }
 
+.login-form .form-control.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
+}
+
+.invalid-feedback {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+}
+
 .login-form .form-control:focus {
   outline: none;
   border-color: #8D1C3D;

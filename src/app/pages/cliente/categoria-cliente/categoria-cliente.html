@@ -1,207 +1,396 @@
 <main class="categoria-cliente-main container-fluid py-3">
+  <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>
 
-    <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>
-  
-    <!-- ===================== -->
-    <!-- FILTROS -->
-    <!-- ===================== -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-  
-        <h6 class="card-title text-muted mb-3">
-          <i class="bi bi-funnel me-2"></i>Filtros de búsqueda
-        </h6>
-  
-        <div class="row g-3">
-  
-          <div class="col-md-4">
-            <label class="form-label small">Nombre</label>
-            <input type="text"
-                   class="form-control form-control-sm"
-                   [(ngModel)]="filtroNombre"
-                   placeholder="Buscar por nombre...">
-          </div>
-  
-          <div class="col-md-4">
-            <label class="form-label small">Estado</label>
-            <select class="form-select form-select-sm"
-                    [(ngModel)]="filtroEstado">
-              <option value="">Todos</option>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
-          </div>
-  
-          <div class="col-md-4">
-            <label class="form-label small">Fecha de creación</label>
-            <input type="date"
-                   class="form-control form-control-sm"
-                   [(ngModel)]="filtroFecha">
-          </div>
-  
+  @if (loadError) {
+    <div class="alert alert-danger d-flex align-items-center justify-content-between">
+      <span>{{ loadError }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="reintentar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="card-title text-muted mb-3">
+        <h5><i class="bi bi-funnel me-2"></i>Filtros de búsqueda</h5>
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label small">Nombre</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="filtroNombre"
+            (ngModelChange)="onFiltrosCambiados()"
+            placeholder="Buscar por nombre..."
+          />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Estado</label>
+          <select
+            class="form-select form-select-sm"
+            [(ngModel)]="filtroEstado"
+            (ngModelChange)="onFiltrosCambiados()"
+          >
+            <option value="">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Fecha de creación</label>
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            [(ngModel)]="filtroFecha"
+            (ngModelChange)="onFiltrosCambiados()"
+          />
         </div>
       </div>
     </div>
-  
-    <!-- ===================== -->
-    <!-- LISTADO -->
-    <!-- ===================== -->
-    <div class="card shadow-sm">
-  
-      <div class="card-header bg-white d-flex justify-content-between align-items-center">
-  
-        <div>
-          <h5 class="mb-0 fw-semibold">Listado de Categorías de Cliente</h5>
-        </div>
-  
-        <button type="button"
-                class="btn btn-roles-primary"
-                (click)="abrirNuevo()">
-          <i class="bi bi-plus-lg me-2"></i>Crear Categoría
-        </button>
-  
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-0 fw-semibold">Listado de Categorías de Cliente</h5>
       </div>
-  
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-  
-          <thead class="table-light">
-            <tr>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Estado</th>
-              <th>Usuario creador</th>
-              <th>Fecha creación</th>
-              <th class="text-end">Acciones</th>
-            </tr>
-          </thead>
-  
-          <tbody>
-            @for (categoria of categoriasFiltradas; track categoria.id) {
-  
+      <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()">
+        <i class="bi bi-plus-lg me-2"></i>Crear Categoría
+      </button>
+    </div>
+
+    @if (!loadError) {
+      @if (loadPending && (!listLoaded || categorias.length === 0)) {
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+          <p class="mt-3 mb-0 text-muted small">Cargando…</p>
+        </div>
+      } @else if (sinRegistros) {
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-5 text-muted d-block mb-3"></i>
+          <p class="fs-6 fw-semibold text-dark mb-2">No hay categorías registradas.</p>
+          <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()">
+            <i class="bi bi-plus-lg me-2"></i>Crear Categoría
+          </button>
+        </div>
+      } @else {
+        @if (actionError) {
+          <div
+            class="alert alert-warning alert-dismissible fade show border-0 rounded-0 mb-0 py-2 small"
+            role="alert"
+          >
+            {{ actionError }}
+            <button
+              type="button"
+              class="btn-close btn-sm py-2"
+              aria-label="Cerrar"
+              (click)="actionError = ''"
+            ></button>
+          </div>
+        }
+        <div class="table-responsive position-relative">
+          @if (loadPending) {
+            <div
+              class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75 z-1 rounded-bottom"
+            >
+              <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+            </div>
+          }
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
               <tr>
-                <td class="fw-medium">{{ categoria.nombre }}</td>
-                <td>{{ categoria.descripcion }}</td>
-  
-                <td>
-                  <span class="badge px-3 py-2"
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Usuario creador</th>
+                <th>Fecha creación</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (sinResultadosPorFiltro) {
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    <i class="bi bi-funnel fs-1 d-block mb-2"></i>
+                    No hay resultados para los filtros seleccionados.
+                  </td>
+                </tr>
+              } @else {
+                @for (categoria of categoriasFiltradasPaginadas; track categoria.id) {
+                  <tr>
+                    <td class="fw-medium">{{ categoria.nombre }}</td>
+                    <td>{{ categoria.descripcion }}</td>
+                    <td>
+                      <span
+                        class="badge px-3 py-2"
                         [class.bg-success]="categoria.estado === 'Activo'"
-                        [class.bg-danger]="categoria.estado === 'Inactivo'">
-                    {{ categoria.estado }}
-                  </span>
-                </td>
-  
-                <td>{{ categoria.usuarioCreador }}</td>
-                <td>{{ categoria.fechaCreacion }}</td>
-  
-                <td class="text-end">
-  
-                  <button class="btn btn-sm btn-outline-primary me-1"
-                          (click)="abrirEditar(categoria)">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-  
-                  <button class="btn btn-sm"
-                          [class.btn-outline-warning]="categoria.estado === 'Activo'"
-                          [class.btn-outline-success]="categoria.estado === 'Inactivo'"
-                          (click)="activarDesactivar(categoria)">
-                    <i class="bi"
-                       [class.bi-toggle-on]="categoria.estado === 'Activo'"
-                       [class.bi-toggle-off]="categoria.estado === 'Inactivo'">
-                    </i>
-                  </button>
-  
-                </td>
-  
-              </tr>
-  
-            } @empty {
-  
-              <tr>
-                <td colspan="6"
-                    class="text-center text-muted py-4">
-                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                  No hay categorías registradas.
-                </td>
-              </tr>
-  
-            }
-          </tbody>
-  
-        </table>
+                        [class.bg-danger]="categoria.estado === 'Inactivo'"
+                      >
+                        {{ categoria.estado }}
+                      </span>
+                    </td>
+                    <td>{{ categoria.usuarioCreador }}</td>
+                    <td>{{ categoria.fechaCreacion }}</td>
+                    <td class="text-center">
+                      <div class="acciones-wrapper">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary"
+                          title="Ver información"
+                          (click)="abrirDetalle(categoria)"
+                        >
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        @if (categoria.estadoActivo) {
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            title="Editar"
+                            (click)="abrirEditar(categoria)"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-warning"
+                            [disabled]="accionId === categoria.id"
+                            title="Inactivar"
+                            (click)="activarDesactivar(categoria)"
+                          >
+                            @if (accionId === categoria.id) {
+                              <span
+                                class="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            } @else {
+                              <i class="bi bi-toggle-on"></i>
+                            }
+                          </button>
+                        } @else {
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-success"
+                            [disabled]="accionId === categoria.id"
+                            title="Activar"
+                            (click)="activarDesactivar(categoria)"
+                          >
+                            @if (accionId === categoria.id) {
+                              <span
+                                class="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            } @else {
+                              <i class="bi bi-check-lg"></i>
+                            }
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (mostrarBarraPaginacion) {
+          <div class="card-footer bg-white categoria-cliente-pagination-footer">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap w-100">
+              <div class="d-flex align-items-center gap-2 categoria-cliente-pagination-page-size">
+                <label class="small text-muted mb-0" for="categoriaClienteTamanoPagina">Por página</label>
+                <select
+                  id="categoriaClienteTamanoPagina"
+                  class="form-select form-select-sm categoria-cliente-page-size-select"
+                  [(ngModel)]="itemsPorPagina"
+                  (ngModelChange)="onTamanoPaginaChange()"
+                >
+                  @for (n of tamanoPaginaOpciones; track n) {
+                    <option [ngValue]="n">{{ n }}</option>
+                  }
+                </select>
+              </div>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
+                <span class="small text-muted">
+                  {{ categoriasFiltradas.length }} registro(s) · Página {{ paginaActual }} de {{ totalPaginas }}
+                </span>
+                @if (hayMultiplesPaginas) {
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual <= 1"
+                      (click)="irPagina(paginaActual - 1)"
+                      aria-label="Anterior"
+                    >
+                      <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual >= totalPaginas"
+                      (click)="irPagina(paginaActual + 1)"
+                      aria-label="Siguiente"
+                    >
+                      <i class="bi bi-chevron-right"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <div
+    class="modal fade"
+    id="modalCategoriaClienteDetalle"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div
+      class="modal-dialog modal-dialog-centered modal-dialog-scrollable categoria-cliente-modal-detalle-dialog"
+    >
+      <div class="modal-content categoria-cliente-modal-detalle">
+        @if (categoriaDetalle) {
+          <div class="modal-header modal-header-roles d-flex align-items-center">
+            <h5 class="modal-title text-white mb-0 flex-grow-1">Detalle de Categoría de Cliente</h5>
+            <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+              <span class="badge rounded-pill px-3 py-2 bg-white text-dark categoria-cliente-detalle-badge">
+                {{ categoriaDetalle.estado }}
+              </span>
+              <button
+                type="button"
+                class="btn btn-sm categoria-cliente-modal-x"
+                aria-label="Cerrar"
+                (click)="cerrarModalDetalle()"
+              >
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="modal-body categoria-cliente-detalle-body">
+            <div class="mb-3">
+              <div class="categoria-cliente-detalle-label">Nombre</div>
+              <div class="categoria-cliente-detalle-valor">{{ categoriaDetalle.nombre }}</div>
+            </div>
+            <div class="mb-4 w-100">
+              <div class="categoria-cliente-detalle-label">Descripción</div>
+              <div
+                class="categoria-cliente-detalle-valor categoria-cliente-detalle-descripcion text-break"
+              >
+                {{ categoriaDetalle.descripcion || '—' }}
+              </div>
+            </div>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="categoria-cliente-detalle-label">Usuario creador</div>
+                <div class="categoria-cliente-detalle-valor">{{ categoriaDetalle.usuarioCreador }}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="categoria-cliente-detalle-label">Fecha de creación</div>
+                <div class="categoria-cliente-detalle-valor">
+                  {{ fechaCreacionLegible(categoriaDetalle.fechaCreacion) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0 justify-content-end">
+            <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalDetalle()">
+              Cerrar
+            </button>
+          </div>
+        }
       </div>
-  
     </div>
-  
-    <!-- BOTÓN OCULTO -->
-    <button #btnAbrirModal
+  </div>
+
+  <div
+    class="modal fade"
+    id="modalCategoriaClienteForm"
+    tabindex="-1"
+    aria-labelledby="modalCategoriaClienteFormLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header modal-header-roles d-flex align-items-center">
+          <h5 class="modal-title text-white mb-0" id="modalCategoriaClienteFormLabel">{{ modalTitulo }}</h5>
+          <button
             type="button"
-            class="d-none"
-            data-bs-toggle="modal"
-            data-bs-target="#modalCategoriaCliente">
-    </button>
-  
-    <!-- ===================== -->
-    <!-- MODAL -->
-    <!-- ===================== -->
-    <div class="modal fade"
-         id="modalCategoriaCliente"
-         tabindex="-1">
-  
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-  
-          <div class="modal-header modal-header-roles">
-            <h5 class="modal-title text-white">
-              {{ modalTitulo }}
-            </h5>
-            <button type="button"
-                    class="btn-close btn-close-white"
-                    data-bs-dismiss="modal">
-            </button>
-          </div>
-  
-          <div class="modal-body">
-  
-            <div class="mb-3">
-              <label class="form-label">Nombre<small style="color: red;">*</small></label>
-              <input type="text"
-                     class="form-control"
-                     placeholder="Premium"
-                     [(ngModel)]="form.nombre">
+            class="btn btn-sm categoria-cliente-modal-x ms-auto"
+            aria-label="Cerrar"
+            (click)="cerrarModalFormulario()"
+          >
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 position-relative">
+            <label class="form-label">
+              Nombre
+              @if (esCreacion) {
+                <small class="text-danger">*</small>
+              }
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              [attr.maxlength]="maxNombre"
+              [(ngModel)]="form.nombre"
+              placeholder="Ej: Cliente frecuente"
+              autocomplete="off"
+            />
+            <div class="categoria-cliente-char-counter small text-muted">
+              {{ form.nombre.length }} / {{ maxNombre }}
             </div>
-  
-            <div class="mb-3">
-              <label class="form-label">Descripción<small style="color: red;">*</small></label>
-              <textarea class="form-control"
-                        rows="3"
-                        placeholder="Clientes con beneficios especiales."
-                        [(ngModel)]="form.descripcion">
-              </textarea>
+          </div>
+          <div class="mb-2 position-relative">
+            <label class="form-label">
+              Descripción
+              @if (esCreacion) {
+                <small class="text-danger">*</small>
+              }
+            </label>
+            <textarea
+              class="form-control"
+              rows="4"
+              [attr.maxlength]="maxDescripcion"
+              [(ngModel)]="form.descripcion"
+              placeholder="Ej: Clientes con compras frecuentes"
+            ></textarea>
+            <div class="categoria-cliente-char-counter small text-muted">
+              {{ form.descripcion.length }} / {{ maxDescripcion }}
             </div>
-  
           </div>
-  
-          <div class="modal-footer justify-content-center py-3">
-  
-            <button type="button"
-                    class="btn btn-roles-primary px-4"
-                    (click)="guardar()">
-              <i class="bi bi-check-square"></i> Guardar
-            </button>
-  
-            <button type="button"
-                    class="btn btn-outline-danger px-4"
-                    data-bs-dismiss="modal">
-              <i class="bi bi-x-square"></i> Cancelar
-            </button>
-  
-          </div>
-  
+          @if (saveError) {
+            <div class="alert alert-warning py-2 small mb-0" role="alert">{{ saveError }}</div>
+          }
+        </div>
+        <div class="modal-footer justify-content-end py-3 border-top gap-2">
+          <button
+            type="button"
+            class="btn btn-roles-primary px-4"
+            (click)="guardar()"
+            [disabled]="savePending"
+          >
+            @if (savePending) {
+              <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            }
+            <i class="bi bi-check-square"></i> Guardar
+          </button>
+          <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalFormulario()">
+            <i class="bi bi-x-square"></i> Cancelar
+          </button>
         </div>
       </div>
-  
     </div>
-  
-  </main>
-  
+  </div>
+</main>

@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "api": "npm --prefix server start",
+    "api:dev": "npm --prefix server run dev"
   },
   "prettier": {
     "printWidth": 100,

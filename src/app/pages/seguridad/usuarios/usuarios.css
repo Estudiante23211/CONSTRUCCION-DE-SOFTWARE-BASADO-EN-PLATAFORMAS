@@ -1,43 +1,126 @@
 .usuarios-main {
-    max-width: 100%;
-  }
-  
-  .btn-roles-primary {
-    background-color: var(--color-primary);
-    color: var(--color-light);
-    border: none;
-  }
-  
-  .btn-roles-primary:hover {
-    background-color: var(--color-accent);
-    color: var(--color-light);
-  }
-  
-  .modal-header-roles {
-    background: linear-gradient(
-      135deg,
-      var(--color-primary),
-      var(--color-trust)
-    );
-    color: var(--color-light);
-  }
-  
-  .usuarios-main .table-hover tbody tr:hover {
-    background-color: rgba(166, 74, 201, 0.08);
-  }
-  
-  .card-header {
-    border-bottom: 1px solid #f1f1f1;
-  }
-  
-  .table thead th {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6c757d;
-  }
-  
-  .modal-footer {
-    border-top: 1px solid #f1f1f1;
-  }
-  
+  max-width: 100%;
+}
+
+.btn-roles-primary {
+  background-color: var(--color-primary);
+  color: var(--color-light);
+  border: none;
+}
+
+.btn-roles-primary:hover {
+  background-color: var(--color-accent);
+  color: var(--color-light);
+}
+
+.modal-header-roles {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-trust)
+  );
+  color: var(--color-light);
+}
+
+.usuarios-main .table-hover tbody tr:hover {
+  background-color: rgba(166, 74, 201, 0.08);
+}
+
+.card-header {
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.table thead th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+.table tbody td {
+  vertical-align: middle;
+}
+
+.modal-footer {
+  border-top: 1px solid #f1f1f1;
+}
+
+.acciones-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.usuarios-main .modal-body input:disabled,
+.usuarios-main .modal-body textarea:disabled {
+  background-color: #f1f3f5;
+}
+
+/* Detalle (misma línea visual que Roles) */
+.usuarios-detalle-body {
+  padding-top: 0.5rem;
+}
+
+.usuarios-detalle-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #868e96;
+  margin-bottom: 0.35rem;
+}
+
+.usuarios-detalle-valor {
+  font-weight: 600;
+  color: #212529;
+  font-size: 1rem;
+}
+
+.usuarios-modal-detalle .modal-footer {
+  padding-top: 0;
+}
+
+.usuarios-char-counter {
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.usuarios-pagination-footer {
+  margin-top: 0.75rem;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  border-top: 1px solid #dee2e6 !important;
+}
+
+.usuarios-main .usuarios-pagination-footer .btn-sm {
+  min-width: 2.25rem;
+}
+
+.usuarios-page-size-select {
+  width: auto;
+  min-width: 4.5rem;
+}
+
+.usuarios-pagination-page-size {
+  flex-shrink: 0;
+}
+
+.usuarios-modal-detalle-dialog {
+  max-width: min(56rem, calc(100% - 2rem));
+}
+
+/* Cierre superior (X roja), alineado con Tarea 8 */
+.usuarios-modal-x {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  background: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+  padding: 0.35rem 0.45rem;
+}
+
+.usuarios-modal-x:hover {
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}

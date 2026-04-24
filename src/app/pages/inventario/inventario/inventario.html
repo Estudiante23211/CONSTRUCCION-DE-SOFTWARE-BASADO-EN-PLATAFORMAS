@@ -1,170 +1,424 @@
-<main class="container py-4">
+<main class="inventario-main container-fluid py-3">
+  <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>
 
-    <h2 class="fw-bold mb-4">{{ tituloModulo }}</h2>
-  
-    <!-- FILTROS -->
-    <div class="card p-3 mb-4 shadow-sm">
-      <div class="row">
-  
+  @if (loadError) {
+    <div class="alert alert-danger d-flex align-items-center justify-content-between">
+      <span>{{ loadError }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="reintentar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="mb-3">
+        <i class="bi bi-funnel me-2"></i>Filtros de búsqueda
+      </h5>
+      <div class="row g-3">
         <div class="col-md-4">
-          <select class="form-select" [(ngModel)]="filtroProducto">
-            <option [ngValue]="0">Todos los productos</option>
-            <option *ngFor="let p of productos" [ngValue]="p.id">
-              {{ p.nombre }}
-            </option>
+          <label class="form-label small text-muted" for="invFiltroProducto">Producto</label>
+          <select
+            id="invFiltroProducto"
+            class="form-select form-select-sm"
+            [(ngModel)]="filtroProducto"
+            (ngModelChange)="onFiltrosCambiados()"
+          >
+            <option [ngValue]="0">Todos</option>
+            @for (p of productos; track p.id) {
+              <option [ngValue]="p.id">{{ p.nombre }}</option>
+            }
           </select>
         </div>
-  
         <div class="col-md-4">
-          <select class="form-select" [(ngModel)]="filtroEstado">
-            <option value="">Todos los estados</option>
-            <option>Activo</option>
-            <option>Inactivo</option>
+          <label class="form-label small text-muted" for="invFiltroEstado">Estado</label>
+          <select
+            id="invFiltroEstado"
+            class="form-select form-select-sm"
+            [(ngModel)]="filtroEstado"
+            (ngModelChange)="onFiltrosCambiados()"
+          >
+            <option value="">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
           </select>
         </div>
-  
         <div class="col-md-4">
-          <input type="date" class="form-control" [(ngModel)]="filtroFecha">
+          <label class="form-label small text-muted" for="invFiltroFecha">Fecha de creación</label>
+          <input
+            id="invFiltroFecha"
+            type="date"
+            class="form-control form-control-sm"
+            [(ngModel)]="filtroFecha"
+            (ngModelChange)="onFiltrosCambiados()"
+          />
         </div>
-  
       </div>
     </div>
-  
-    <div class="text-end mb-3">
-      <button class="btn btn-primary" (click)="abrirNuevo()">
-        Nuevo Inventario
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0 fw-semibold">Listado de inventario</h5>
+      <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()" [disabled]="loadPending">
+        <i class="bi bi-plus-lg me-2"></i>Nuevo inventario
       </button>
     </div>
-  
-    <!-- LISTADO -->
-    <div class="card shadow-sm">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Producto</th>
-              <th>Unidad</th>
-              <th>Inicial</th>
-              <th>Actual</th>
-              <th>Alerta</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-              <th class="text-center">Acciones</th>
-            </tr>
-          </thead>
-  
-          <tbody>
-            <tr *ngFor="let i of inventariosFiltrados"
-                [class.table-danger]="stockBajo(i)">
-  
-              <td>{{ i.productoNombre }}</td>
-              <td>{{ i.unidadMedida }}</td>
-              <td>{{ i.cantidadInicial }}</td>
-              <td>
-                {{ i.cantidadActual }}
-                <span *ngIf="stockBajo(i)" class="badge bg-danger ms-2">
-                  Stock Bajo
+
+    @if (!loadError) {
+      @if (loadPending && (!listLoaded || inventarios.length === 0)) {
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+          <p class="mt-3 mb-0 text-muted small">Cargando inventario…</p>
+        </div>
+      } @else if (sinRegistros) {
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-5 text-muted d-block mb-3"></i>
+          <p class="fs-6 fw-semibold text-dark mb-2">No hay líneas de inventario en la base de datos.</p>
+          <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo inventario
+          </button>
+        </div>
+      } @else {
+        <div class="table-responsive position-relative">
+          @if (loadPending) {
+            <div
+              class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75 z-1 rounded-bottom"
+            >
+              <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+            </div>
+          }
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th>Unidad</th>
+                <th>Inicial</th>
+                <th>Actual</th>
+                <th>Alerta</th>
+                <th>Estado</th>
+                <th>Usuario creador</th>
+                <th>Fecha creación</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (sinResultadosPorFiltro) {
+                <tr>
+                  <td colspan="9" class="text-center text-muted py-4">
+                    <i class="bi bi-funnel fs-1 d-block mb-2"></i>
+                    No hay resultados para los filtros seleccionados.
+                  </td>
+                </tr>
+              } @else {
+                @for (i of inventariosFiltradosPaginados; track i.id) {
+                  <tr [class.table-danger]="stockBajo(i)">
+                    <td class="fw-medium">{{ i.productoNombre }}</td>
+                    <td>{{ i.unidadMedida }}</td>
+                    <td>{{ i.cantidadInicial }}</td>
+                    <td>
+                      {{ i.cantidadActual }}
+                      @if (stockBajo(i)) {
+                        <span class="badge bg-danger ms-2">Stock bajo</span>
+                      }
+                    </td>
+                    <td>{{ i.alertaMinima }}</td>
+                    <td>
+                      <span
+                        class="badge px-3 py-2"
+                        [class.bg-success]="i.estado === 'Activo'"
+                        [class.bg-danger]="i.estado === 'Inactivo'"
+                      >
+                        {{ i.estado }}
+                      </span>
+                    </td>
+                    <td>{{ i.usuarioCreacion }}</td>
+                    <td>{{ i.fechaCreacion }}</td>
+                    <td class="text-center">
+                      <div class="acciones-wrapper">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary"
+                          title="Ver información"
+                          (click)="verDetalle(i)"
+                        >
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-primary"
+                          title="Editar"
+                          (click)="abrirEditar(i)"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (mostrarBarraPaginacion) {
+          <div class="card-footer bg-white inventario-pagination-footer">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap w-100">
+              <div class="d-flex align-items-center gap-2 inventario-pagination-page-size">
+                <label class="small text-muted mb-0" for="inventarioTamanoPagina">Por página</label>
+                <select
+                  id="inventarioTamanoPagina"
+                  class="form-select form-select-sm inventario-page-size-select"
+                  [(ngModel)]="itemsPorPagina"
+                  (ngModelChange)="onTamanoPaginaChange()"
+                >
+                  @for (n of tamanoPaginaOpciones; track n) {
+                    <option [ngValue]="n">{{ n }}</option>
+                  }
+                </select>
+              </div>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
+                <span class="small text-muted">
+                  {{ inventariosFiltrados.length }} registro(s) · Página {{ paginaActual }} de {{ totalPaginas }}
                 </span>
-              </td>
-              <td>{{ i.alertaMinima }}</td>
-              <td>
-                <span class="badge"
-                  [class.bg-success]="i.estado==='Activo'"
-                  [class.bg-secondary]="i.estado==='Inactivo'">
-                  {{ i.estado }}
-                </span>
-              </td>
-              <td>{{ i.fechaCreacion }}</td>
-              <td class="text-center">
-  
-                <button class="btn btn-sm btn-outline-info me-1"
-                  (click)="verDetalle(i)">
-                  Ver
-                </button>
-  
-                <button class="btn btn-sm btn-outline-primary me-1"
-                  (click)="abrirEditar(i)">
-                  Editar
-                </button>
-  
-                <button class="btn btn-sm btn-outline-danger"
-                  (click)="eliminar(i)">
-                  Inactivar
-                </button>
-  
-              </td>
-            </tr>
-          </tbody>
-  
-        </table>
+                @if (hayMultiplesPaginas) {
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual <= 1"
+                      (click)="irPagina(paginaActual - 1)"
+                      aria-label="Anterior"
+                    >
+                      <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual >= totalPaginas"
+                      (click)="irPagina(paginaActual + 1)"
+                      aria-label="Siguiente"
+                    >
+                      <i class="bi bi-chevron-right"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <!-- Modal detalle -->
+  <div
+    class="modal fade"
+    id="modalInventarioDetalle"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable inventario-modal-detalle-dialog">
+      <div class="modal-content inventario-modal-detalle">
+        @if (inventarioDetalle) {
+          <div class="modal-header modal-header-roles d-flex align-items-center flex-wrap gap-2">
+            <h5 class="modal-title text-white mb-0 flex-grow-1">Detalle de inventario</h5>
+            <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+              <span
+                class="badge rounded-pill px-3 py-2 inventario-detalle-badge-estado text-white"
+                [class.bg-success]="inventarioDetalle.estado === 'Activo'"
+                [class.bg-danger]="inventarioDetalle.estado === 'Inactivo'"
+              >
+                {{ inventarioDetalle.estado }}
+              </span>
+              <button
+                type="button"
+                class="btn btn-sm inventario-modal-x"
+                aria-label="Cerrar"
+                (click)="cerrarModalDetalle()"
+              >
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="modal-body inventario-detalle-body">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="inventario-detalle-label">Producto</div>
+                <div class="inventario-detalle-valor">{{ inventarioDetalle.productoNombre }}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="inventario-detalle-label">Unidad de medida</div>
+                <div class="inventario-detalle-valor">{{ inventarioDetalle.unidadMedida }}</div>
+              </div>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <div class="inventario-detalle-label">Cantidad inicial</div>
+                <div class="inventario-detalle-valor">{{ inventarioDetalle.cantidadInicial }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="inventario-detalle-label">Cantidad actual</div>
+                <div class="inventario-detalle-valor">{{ inventarioDetalle.cantidadActual }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="inventario-detalle-label">Alerta</div>
+                <div class="inventario-detalle-valor">{{ inventarioDetalle.alertaMinima }}</div>
+              </div>
+            </div>
+            <div class="row g-3 mb-0">
+              <div class="col-md-6">
+                <div class="inventario-detalle-label">Usuario creador</div>
+                <div class="inventario-detalle-valor">{{ inventarioDetalle.usuarioCreacion }}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="inventario-detalle-label">Fecha de creación</div>
+                <div class="inventario-detalle-valor">
+                  {{ fechaCreacionLegible(inventarioDetalle.fechaCreacion) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0 justify-content-end">
+            <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalDetalle()">
+              Cerrar
+            </button>
+          </div>
+        }
       </div>
     </div>
-  
-    <!-- BOTONES MODALES -->
-    <button #btnModal class="d-none"
-      data-bs-toggle="modal"
-      data-bs-target="#modalInventario"></button>
-  
-    <button #btnModalDetalle class="d-none"
-      data-bs-toggle="modal"
-      data-bs-target="#modalDetalle"></button>
-  
-    <!-- MODAL CREAR / EDITAR -->
-    <div class="modal fade" id="modalInventario">
-      <div class="modal-dialog">
-        <div class="modal-content p-3">
-          <h5>{{ modalTitulo }}</h5>
-  
-          <select class="form-select mb-2"
-            [(ngModel)]="form.idProducto">
-            <option [ngValue]="0">Seleccione producto</option>
-            <option *ngFor="let p of productos"
-              [ngValue]="p.id">
-              {{ p.nombre }}
-            </option>
-          </select>
-  
-          <select class="form-select mb-2"
-            [(ngModel)]="form.unidadMedida">
-            <option value="">Seleccione unidad</option>
-            <option *ngFor="let u of unidadesMedida">
-              {{ u }}
-            </option>
-          </select>
-  
-          <input type="number" class="form-control mb-2"
-            placeholder="Cantidad Inicial"
-            [(ngModel)]="form.cantidadInicial" min="0">
-  
-          <input type="number" class="form-control mb-2"
-            placeholder="Cantidad Actual"
-            [(ngModel)]="form.cantidadActual" min="0">
-  
-          <input type="number" class="form-control mb-3"
-            placeholder="Alerta mínima"
-            [(ngModel)]="form.alertaMinima" min="0">
-  
-          <button class="btn btn-success w-100"
-            (click)="guardar()">Guardar</button>
+  </div>
+
+  <!-- Modal crear / editar -->
+  <div
+    class="modal fade"
+    id="modalInventarioForm"
+    tabindex="-1"
+    aria-labelledby="modalInventarioFormLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable inventario-modal-form-dialog">
+      <div class="modal-content">
+        <div class="modal-header modal-header-roles d-flex align-items-center">
+          <h5 class="modal-title text-white mb-0" id="modalInventarioFormLabel">{{ modalTitulo }}</h5>
+          <button
+            type="button"
+            class="btn btn-sm inventario-modal-x ms-auto"
+            aria-label="Cerrar"
+            (click)="cerrarModalFormulario()"
+          >
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6 mb-1">
+              <label class="form-label" for="invFormProducto">
+                Producto
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <select id="invFormProducto" class="form-select" [(ngModel)]="form.idProducto">
+                <option [ngValue]="0">Seleccione un producto</option>
+                @for (p of productos; track p.id) {
+                  <option [ngValue]="p.id">{{ p.nombre }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-6 mb-1">
+              <label class="form-label" for="invFormUnidad">
+                Unidad de medida
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <select id="invFormUnidad" class="form-select" [(ngModel)]="form.idUnidadMedida">
+                <option [ngValue]="0">Seleccione una unidad</option>
+                @for (u of unidadesMedida; track u.id) {
+                  <option [ngValue]="u.id">{{ u.nombre }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4 mb-1">
+              <label class="form-label" for="invCantIni">
+                Cantidad inicial
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                id="invCantIni"
+                type="number"
+                class="form-control"
+                min="0"
+                step="1"
+                [(ngModel)]="form.cantidadInicial"
+                placeholder="Ej: 100"
+              />
+              <div class="inventario-char-counter small text-muted">
+                {{ contadorDigitos(form.cantidadInicial) }} / {{ maxDigitosCantidad }}
+              </div>
+            </div>
+            <div class="col-md-4 mb-1">
+              <label class="form-label" for="invCantAct">
+                Cantidad actual
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                id="invCantAct"
+                type="number"
+                class="form-control"
+                min="0"
+                step="1"
+                [(ngModel)]="form.cantidadActual"
+                placeholder="Ej: 80"
+              />
+              <div class="inventario-char-counter small text-muted">
+                {{ contadorDigitos(form.cantidadActual) }} / {{ maxDigitosCantidad }}
+              </div>
+            </div>
+            <div class="col-md-4 mb-1">
+              <label class="form-label" for="invAlerta">
+                Alerta
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                id="invAlerta"
+                type="number"
+                class="form-control"
+                min="0"
+                step="1"
+                [(ngModel)]="form.alertaMinima"
+                placeholder="Ej: 10"
+              />
+              <div class="inventario-char-counter small text-muted">
+                {{ contadorDigitos(form.alertaMinima) }} / {{ maxDigitosCantidad }}
+              </div>
+            </div>
+          </div>
+          @if (saveError) {
+            <div class="alert alert-warning py-2 small mt-2 mb-0" role="alert">{{ saveError }}</div>
+          }
+        </div>
+        <div class="modal-footer justify-content-end py-3 border-top gap-2">
+          <button type="button" class="btn btn-roles-primary px-4" (click)="guardar()" [disabled]="savePending">
+            @if (savePending) {
+              <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            }
+            <i class="bi bi-check-square"></i> Guardar
+          </button>
+          <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalFormulario()">
+            <i class="bi bi-x-square"></i> Cancelar
+          </button>
         </div>
       </div>
     </div>
-  
-    <!-- MODAL DETALLE -->
-    <div class="modal fade" id="modalDetalle">
-      <div class="modal-dialog">
-        <div class="modal-content p-3">
-          <h5>Detalle Inventario</h5>
-  
-          <p><strong>Producto:</strong> {{ inventarioDetalle?.productoNombre }}</p>
-          <p><strong>Unidad:</strong> {{ inventarioDetalle?.unidadMedida }}</p>
-          <p><strong>Inicial:</strong> {{ inventarioDetalle?.cantidadInicial }}</p>
-          <p><strong>Actual:</strong> {{ inventarioDetalle?.cantidadActual }}</p>
-          <p><strong>Alerta:</strong> {{ inventarioDetalle?.alertaMinima }}</p>
-          <p><strong>Estado:</strong> {{ inventarioDetalle?.estado }}</p>
-  
-        </div>
-      </div>
-    </div>
-  
-  </main>
+  </div>
+</main>

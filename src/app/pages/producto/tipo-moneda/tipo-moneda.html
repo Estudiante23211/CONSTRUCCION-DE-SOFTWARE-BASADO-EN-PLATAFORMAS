@@ -1,166 +1,396 @@
-<main class="container-fluid py-4">
+<main class="tipo-moneda-main container-fluid py-3">
+  <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>
 
-    <h2 class="mb-4 fw-bold">{{ tituloModulo }}</h2>
-  
-    <!-- ================= FILTROS ================= -->
-    <div class="card shadow-sm mb-4 filtro-card">
-      <div class="card-body">
-  
-        <h6 class="mb-3 text-muted">
-          <i class="bi bi-funnel me-2"></i>Filtros de búsqueda
-        </h6>
-  
-        <div class="row g-3">
-  
-          <div class="col-md-4">
-            <label class="form-label small">Nombre</label>
-            <input type="text"
-                   class="form-control form-control-sm"
-                   [(ngModel)]="filtroNombre">
-          </div>
-  
-          <div class="col-md-4">
-            <label class="form-label small">Estado</label>
-            <select class="form-select form-select-sm"
-                    [(ngModel)]="filtroEstado">
-              <option value="">Todos</option>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
-          </div>
-  
-          <div class="col-md-4">
-            <label class="form-label small">Fecha Creación</label>
-            <input type="date"
-                   class="form-control form-control-sm"
-                   [(ngModel)]="filtroFecha">
-          </div>
-  
+  @if (loadError) {
+    <div class="alert alert-danger d-flex align-items-center justify-content-between">
+      <span>{{ loadError }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="reintentar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="card-title text-muted mb-3">
+        <h5><i class="bi bi-funnel me-2"></i>Filtros de búsqueda</h5>
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label small">Nombre</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="filtroNombre"
+            (ngModelChange)="onFiltrosCambiados()"
+            placeholder="Buscar por nombre..."
+          />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Estado</label>
+          <select
+            class="form-select form-select-sm"
+            [(ngModel)]="filtroEstado"
+            (ngModelChange)="onFiltrosCambiados()"
+          >
+            <option value="">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Fecha de creación</label>
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            [(ngModel)]="filtroFecha"
+            (ngModelChange)="onFiltrosCambiados()"
+          />
         </div>
       </div>
     </div>
-  
-    <!-- ================= LISTADO ================= -->
-    <div class="card shadow-sm">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Listado de Tipos de Moneda</h5>
-        <button class="btn btn-primary" (click)="abrirNuevo()">
-          <i class="bi bi-plus-lg me-2"></i>Nuevo
-        </button>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-0 fw-semibold">Listado de Tipos de Moneda</h5>
       </div>
-  
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Estado</th>
-              <th>Usuario</th>
-              <th>Fecha</th>
-              <th class="text-center">Acciones</th>
-            </tr>
-          </thead>
-  
-          <tbody>
-            @for (t of listaFiltrada; track t.id) {
-            <tr>
-              <td>{{ t.nombre }}</td>
-              <td>{{ t.descripcion }}</td>
-              <td>
-                <span class="badge"
-                  [class.bg-success]="t.estado === 'Activo'"
-                  [class.bg-danger]="t.estado === 'Inactivo'">
-                  {{ t.estado }}
+      <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()">
+        <i class="bi bi-plus-lg me-2"></i>Crear Tipo de Moneda
+      </button>
+    </div>
+
+    @if (!loadError) {
+      @if (loadPending && (!listLoaded || tiposMoneda.length === 0)) {
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+          <p class="mt-3 mb-0 text-muted small">Cargando…</p>
+        </div>
+      } @else if (sinRegistros) {
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-5 text-muted d-block mb-3"></i>
+          <p class="fs-6 fw-semibold text-dark mb-2">No hay tipos de moneda registrados.</p>
+          <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()">
+            <i class="bi bi-plus-lg me-2"></i>Crear Tipo de Moneda
+          </button>
+        </div>
+      } @else {
+        @if (actionError) {
+          <div
+            class="alert alert-warning alert-dismissible fade show border-0 rounded-0 mb-0 py-2 small"
+            role="alert"
+          >
+            {{ actionError }}
+            <button
+              type="button"
+              class="btn-close btn-sm py-2"
+              aria-label="Cerrar"
+              (click)="actionError = ''"
+            ></button>
+          </div>
+        }
+        <div class="table-responsive position-relative">
+          @if (loadPending) {
+            <div
+              class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75 z-1 rounded-bottom"
+            >
+              <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+            </div>
+          }
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Usuario creador</th>
+                <th>Fecha creación</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (sinResultadosPorFiltro) {
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    <i class="bi bi-funnel fs-1 d-block mb-2"></i>
+                    No hay resultados para los filtros seleccionados.
+                  </td>
+                </tr>
+              } @else {
+                @for (tipo of tiposMonedaFiltradosPaginados; track tipo.id) {
+                  <tr>
+                    <td class="fw-medium">{{ tipo.nombre }}</td>
+                    <td>{{ tipo.descripcion }}</td>
+                    <td>
+                      <span
+                        class="badge px-3 py-2"
+                        [class.bg-success]="tipo.estado === 'Activo'"
+                        [class.bg-danger]="tipo.estado === 'Inactivo'"
+                      >
+                        {{ tipo.estado }}
+                      </span>
+                    </td>
+                    <td>{{ tipo.usuarioCreacion }}</td>
+                    <td>{{ tipo.fechaCreacion }}</td>
+                    <td class="text-center">
+                      <div class="acciones-wrapper">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary"
+                          title="Ver información"
+                          (click)="abrirDetalle(tipo)"
+                        >
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        @if (tipo.estadoActivo) {
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            title="Editar"
+                            (click)="abrirEditar(tipo)"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-warning"
+                            [disabled]="accionId === tipo.id"
+                            title="Inactivar"
+                            (click)="activarDesactivar(tipo)"
+                          >
+                            @if (accionId === tipo.id) {
+                              <span
+                                class="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            } @else {
+                              <i class="bi bi-toggle-on"></i>
+                            }
+                          </button>
+                        } @else {
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-success"
+                            [disabled]="accionId === tipo.id"
+                            title="Activar"
+                            (click)="activarDesactivar(tipo)"
+                          >
+                            @if (accionId === tipo.id) {
+                              <span
+                                class="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            } @else {
+                              <i class="bi bi-check-lg"></i>
+                            }
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (mostrarBarraPaginacion) {
+          <div class="card-footer bg-white tipo-moneda-pagination-footer">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap w-100">
+              <div class="d-flex align-items-center gap-2 tipo-moneda-pagination-page-size">
+                <label class="small text-muted mb-0" for="tipoMonedaTamanoPagina">Por página</label>
+                <select
+                  id="tipoMonedaTamanoPagina"
+                  class="form-select form-select-sm tipo-moneda-page-size-select"
+                  [(ngModel)]="itemsPorPagina"
+                  (ngModelChange)="onTamanoPaginaChange()"
+                >
+                  @for (n of tamanoPaginaOpciones; track n) {
+                    <option [ngValue]="n">{{ n }}</option>
+                  }
+                </select>
+              </div>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
+                <span class="small text-muted">
+                  {{ tiposMonedaFiltrados.length }} registro(s) · Página {{ paginaActual }} de {{ totalPaginas }}
                 </span>
-              </td>
-              <td>{{ t.usuarioCreacion }}</td>
-              <td>{{ t.fechaCreacion }}</td>
-  
-              <td class="text-center">
-                <div class="acciones-container">
-                  <button class="btn btn-sm btn-outline-primary"
-                          (click)="abrirEditar(t)">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-  
-                  <button class="btn btn-sm"
-                          [class.btn-outline-danger]="t.estado === 'Activo'"
-                          [class.btn-outline-success]="t.estado === 'Inactivo'"
-                          (click)="cambiarEstado(t)">
-                    <i class="bi"
-                       [class.bi-toggle-off]="t.estado === 'Activo'"
-                       [class.bi-toggle-on]="t.estado === 'Inactivo'"></i>
-                  </button>
+                @if (hayMultiplesPaginas) {
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual <= 1"
+                      (click)="irPagina(paginaActual - 1)"
+                      aria-label="Anterior"
+                    >
+                      <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual >= totalPaginas"
+                      (click)="irPagina(paginaActual + 1)"
+                      aria-label="Siguiente"
+                    >
+                      <i class="bi bi-chevron-right"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <div
+    class="modal fade"
+    id="modalTipoMonedaDetalle"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div
+      class="modal-dialog modal-dialog-centered modal-dialog-scrollable tipo-moneda-modal-detalle-dialog"
+    >
+      <div class="modal-content tipo-moneda-modal-detalle">
+        @if (tipoMonedaDetalle) {
+          <div class="modal-header modal-header-roles d-flex align-items-center">
+            <h5 class="modal-title text-white mb-0 flex-grow-1">Detalle de Tipo de Moneda</h5>
+            <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+              <span class="badge rounded-pill px-3 py-2 bg-white text-dark tipo-moneda-detalle-badge">
+                {{ tipoMonedaDetalle.estado }}
+              </span>
+              <button
+                type="button"
+                class="btn btn-sm tipo-moneda-modal-x"
+                aria-label="Cerrar"
+                (click)="cerrarModalDetalle()"
+              >
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="modal-body tipo-moneda-detalle-body">
+            <div class="mb-3">
+              <div class="tipo-moneda-detalle-label">Nombre</div>
+              <div class="tipo-moneda-detalle-valor">{{ tipoMonedaDetalle.nombre }}</div>
+            </div>
+            <div class="mb-4 w-100">
+              <div class="tipo-moneda-detalle-label">Descripción</div>
+              <div
+                class="tipo-moneda-detalle-valor tipo-moneda-detalle-descripcion text-break"
+              >
+                {{ tipoMonedaDetalle.descripcion || '—' }}
+              </div>
+            </div>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="tipo-moneda-detalle-label">Usuario creador</div>
+                <div class="tipo-moneda-detalle-valor">{{ tipoMonedaDetalle.usuarioCreacion }}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="tipo-moneda-detalle-label">Fecha de creación</div>
+                <div class="tipo-moneda-detalle-valor">
+                  {{ fechaCreacionLegible(tipoMonedaDetalle.fechaCreacion) }}
                 </div>
-              </td>
-            </tr>
-            } @empty {
-            <tr>
-              <td colspan="6" class="text-center py-4 text-muted">
-                No hay registros
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0 justify-content-end">
+            <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalDetalle()">
+              Cerrar
+            </button>
+          </div>
+        }
       </div>
     </div>
-  
-    <!-- BOTON OCULTO -->
-    <button #btnModal class="d-none"
-            data-bs-toggle="modal"
-            data-bs-target="#modalTipoMoneda"></button>
-  
-    <!-- ================= MODAL ================= -->
-    <div class="modal fade" id="modalTipoMoneda" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-  
-          <div class="modal-header modal-header-custom">
-            <h5 class="modal-title text-white">
-              {{ modalTitulo }}
-            </h5>
-            <button type="button"
-                    class="btn-close btn-close-white"
-                    data-bs-dismiss="modal"></button>
-          </div>
-  
-          <div class="modal-body">
-  
-            <div class="mb-3">
-              <label class="form-label fw-semibold">
-                Nombre *
-              </label>
-              <input type="text"
-                     class="form-control"
-                     [(ngModel)]="form.nombre">
+  </div>
+
+  <div
+    class="modal fade"
+    id="modalTipoMonedaForm"
+    tabindex="-1"
+    aria-labelledby="modalTipoMonedaFormLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header modal-header-roles d-flex align-items-center">
+          <h5 class="modal-title text-white mb-0" id="modalTipoMonedaFormLabel">{{ modalTitulo }}</h5>
+          <button
+            type="button"
+            class="btn btn-sm tipo-moneda-modal-x ms-auto"
+            aria-label="Cerrar"
+            (click)="cerrarModalFormulario()"
+          >
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 position-relative">
+            <label class="form-label">
+              Nombre
+              @if (esCreacion) {
+                <small class="text-danger">*</small>
+              }
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              [attr.maxlength]="maxNombre"
+              [(ngModel)]="form.nombre"
+              placeholder="Ej: Peso colombiano"
+              autocomplete="off"
+            />
+            <div class="tipo-moneda-char-counter small text-muted">
+              {{ form.nombre.length }} / {{ maxNombre }}
             </div>
-  
-            <div class="mb-3">
-              <label class="form-label fw-semibold">
-                Descripción
-              </label>
-              <textarea class="form-control"
-                        rows="3"
-                        [(ngModel)]="form.descripcion"></textarea>
+          </div>
+          <div class="mb-2 position-relative">
+            <label class="form-label">
+              Descripción
+              @if (esCreacion) {
+                <small class="text-danger">*</small>
+              }
+            </label>
+            <textarea
+              class="form-control"
+              rows="4"
+              [attr.maxlength]="maxDescripcion"
+              [(ngModel)]="form.descripcion"
+              placeholder="Ej: Moneda oficial de Colombia"
+            ></textarea>
+            <div class="tipo-moneda-char-counter small text-muted">
+              {{ form.descripcion.length }} / {{ maxDescripcion }}
             </div>
-  
           </div>
-  
-          <div class="modal-footer justify-content-center">
-            <button class="btn btn-primary px-4"
-                    (click)="guardar()">
-              Guardar
-            </button>
-            <button class="btn btn-outline-danger px-4"
-                    data-bs-dismiss="modal">
-              Cancelar
-            </button>
-          </div>
-  
+          @if (saveError) {
+            <div class="alert alert-warning py-2 small mb-0" role="alert">{{ saveError }}</div>
+          }
+        </div>
+        <div class="modal-footer justify-content-end py-3 border-top gap-2">
+          <button
+            type="button"
+            class="btn btn-roles-primary px-4"
+            (click)="guardar()"
+            [disabled]="savePending"
+          >
+            @if (savePending) {
+              <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            }
+            <i class="bi bi-check-square"></i> Guardar
+          </button>
+          <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalFormulario()">
+            <i class="bi bi-x-square"></i> Cancelar
+          </button>
         </div>
       </div>
     </div>
-  
-  </main>
+  </div>
+</main>

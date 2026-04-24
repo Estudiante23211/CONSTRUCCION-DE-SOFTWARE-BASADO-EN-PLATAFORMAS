@@ -1,284 +1,605 @@
 <main class="usuarios-main container-fluid py-3">
+  <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>
 
-    <h2 class="mb-4 fw-bold text-dark">{{ tituloModulo }}</h2>
-  
-    <!-- ===================== -->
-    <!-- FILTROS -->
-    <!-- ===================== -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <h6 class="card-title text-muted mb-3">
-          <h5><i class="bi bi-funnel me-2"></i>Filtros de búsqueda</h5>
-        </h6>
-  
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label small">Identificación</label>
-            <input type="text"
-                   class="form-control form-control-sm"
-                   [(ngModel)]="filtroIdentificacion"
-                   placeholder="Buscar por identificación...">
-          </div>
-  
-          <div class="col-md-4">
-            <label class="form-label small">Nombre</label>
-            <input type="text"
-                   class="form-control form-control-sm"
-                   [(ngModel)]="filtroNombre"
-                   placeholder="Buscar por nombre...">
-          </div>
-  
-          <div class="col-md-4">
-            <label class="form-label small">Fecha de registro</label>
-            <input type="date"
-                   class="form-control form-control-sm"
-                   [(ngModel)]="filtroFecha">
-          </div>
+  @if (loadError) {
+    <div class="alert alert-danger d-flex align-items-center justify-content-between">
+      <span>{{ loadError }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="reintentar()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (metaError) {
+    <div class="alert alert-warning small" role="alert">{{ metaError }}</div>
+  }
+
+  <!-- FILTROS -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="card-title text-muted mb-3">
+        <h5><i class="bi bi-funnel me-2"></i>Filtros de búsqueda</h5>
+      </h6>
+
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-5 col-md-12">
+          <label class="form-label small">Buscar</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="filtroBusqueda"
+            (ngModelChange)="onFiltrosCambiados()"
+            placeholder="Rol, identificación, nombre, apellido o usuario…"
+          />
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label small" for="usuariosFiltroEstado">Estado</label>
+          <select
+            id="usuariosFiltroEstado"
+            class="form-select form-select-sm"
+            [(ngModel)]="filtroEstado"
+            (ngModelChange)="onFiltrosCambiados()"
+          >
+            <option value="">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <label class="form-label small">Fecha de registro</label>
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            [(ngModel)]="filtroFecha"
+            (ngModelChange)="onFiltrosCambiados()"
+          />
         </div>
       </div>
     </div>
-  
-    <!-- ===================== -->
-    <!-- LISTADO -->
-    <!-- ===================== -->
-    <div class="card shadow-sm">
-  
-      <div class="card-header bg-white d-flex justify-content-between align-items-center">
-  
-        <div>
-          <h5 class="mb-0 fw-semibold">Listado de Usuarios</h5>
-        </div>
-  
-        <button type="button"
-                class="btn btn-roles-primary"
-                (click)="abrirNuevo()">
-          <i class="bi bi-plus-lg me-2"></i>Crear Usuario
-        </button>
-  
+  </div>
+
+  <!-- LISTADO -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-0 fw-semibold">Listado de Usuarios</h5>
       </div>
-  
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-  
-          <thead class="table-light">
-            <tr>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>celular</th>
-              <th>Estado</th>
-              <th>Usuario creador</th>
-              <th>Fecha creación</th>
-              <th class="text-end">Acciones</th>
-            </tr>
-          </thead>
-  
-          <tbody>
-            @for (usuario of usuariosFiltrados; track usuario.id) {
+
+      <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()">
+        <i class="bi bi-plus-lg me-2"></i>Crear Usuario
+      </button>
+    </div>
+
+    @if (!loadError) {
+      @if (loadPending && (!listLoaded || usuarios.length === 0)) {
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+          <p class="mt-3 mb-0 text-muted small">Cargando usuarios…</p>
+        </div>
+      } @else if (sinUsuariosEnBd) {
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-5 text-muted d-block mb-3"></i>
+          <p class="fs-6 fw-semibold text-dark mb-2">No hay usuarios registrados.</p>
+          <p class="text-muted small mb-4">Use <strong>Crear Usuario</strong> para añadir el primero.</p>
+          <button type="button" class="btn btn-roles-primary" (click)="abrirNuevo()">
+            <i class="bi bi-plus-lg me-2"></i>Crear Usuario
+          </button>
+        </div>
+      } @else {
+        @if (actionError) {
+          <div
+            class="alert alert-warning alert-dismissible fade show border-0 rounded-0 mb-0 py-2 small"
+            role="alert"
+          >
+            {{ actionError }}
+            <button
+              type="button"
+              class="btn-close btn-sm py-2"
+              aria-label="Cerrar"
+              (click)="actionError = ''"
+            ></button>
+          </div>
+        }
+        <div class="table-responsive position-relative">
+          @if (loadPending) {
+            <div
+              class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75 z-1 rounded-bottom"
+            >
+              <div class="spinner-border text-secondary" role="status" aria-label="Cargando"></div>
+            </div>
+          }
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
               <tr>
-                <td class="fw-medium">{{ usuario.nombre }}</td>
-                <td>{{ usuario.apellido }}</td>
-                <td>{{ usuario.celular }}</td>
-  
-                <td>
-                  <span class="badge px-3 py-2"
+                <th>Rol</th>
+                <th>Identificación</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Usuario</th>
+                <th>Estado</th>
+                <th>Usuario creador</th>
+                <th>Fecha creación</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @if (sinResultadosPorFiltro) {
+                <tr>
+                  <td colspan="9" class="text-center text-muted py-4">
+                    <i class="bi bi-funnel fs-1 d-block mb-2"></i>
+                    No hay resultados para los filtros seleccionados.
+                  </td>
+                </tr>
+              } @else {
+                @for (usuario of usuariosFiltradosPaginados; track usuario.id) {
+                  <tr>
+                    <td>{{ usuario.rolNombre }}</td>
+                    <td>{{ usuario.numeroIdentificacion || '—' }}</td>
+                    <td class="fw-medium">{{ usuario.nombre }}</td>
+                    <td>{{ usuario.apellido }}</td>
+                    <td>{{ usuario.usuario }}</td>
+                    <td>
+                      <span
+                        class="badge px-3 py-2"
                         [class.bg-success]="usuario.estado === 'Activo'"
-                        [class.bg-danger]="usuario.estado === 'Inactivo'">
-                    {{ usuario.estado }}
-                  </span>
-                </td>
-  
-                <td>{{ usuario.usuarioCreador }}</td>
-                <td>{{ usuario.fechaCreacion }}</td>
-  
-                <td class="text-end">
-  
-                  <!-- DETALLE -->
-                  <button class="btn btn-sm btn-outline-secondary me-1"
-                          title="Detalle"
-                          (click)="abrirDetalle(usuario)">
-                    <i class="bi bi-eye"></i>
-                  </button>
-  
-                  <!-- EDITAR -->
-                  <button class="btn btn-sm btn-outline-primary me-1"
-                          title="Editar"
-                          (click)="abrirEditar(usuario)">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-  
-                  <!-- ACTIVAR / INACTIVAR -->
-                  <button class="btn btn-sm"
-                          [class.btn-outline-warning]="usuario.estado === 'Activo'"
-                          [class.btn-outline-success]="usuario.estado === 'Inactivo'"
-                          (click)="activarDesactivar(usuario)">
-                    <i class="bi"
-                       [class.bi-toggle-on]="usuario.estado === 'Activo'"
-                       [class.bi-toggle-off]="usuario.estado === 'Inactivo'">
-                    </i>
-                  </button>
-  
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="7" class="text-center text-muted py-4">
-                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                  No hay usuarios registrados.
-                </td>
-              </tr>
-            }
-          </tbody>
-  
-        </table>
-      </div>
-    </div>
-  
-    <!-- ===================== -->
-    <!-- BOTÓN OCULTO MODAL -->
-    <!-- ===================== -->
-    <button #btnAbrirModal
-            type="button"
-            class="d-none"
-            data-bs-toggle="modal"
-            data-bs-target="#modalUsuario">
-    </button>
-  
-    <!-- ===================== -->
-    <!-- MODAL -->
-    <!-- ===================== -->
-    <div class="modal fade"
-         id="modalUsuario"
-         tabindex="-1">
-  
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-  
-          <!-- HEADER -->
-          <div class="modal-header modal-header-roles">
-            <h5 class="modal-title text-white">
-              {{ modalTitulo }}
-            </h5>
-            <button type="button"
-                    class="btn-close btn-close-white"
-                    data-bs-dismiss="modal">
-            </button>
-          </div>
-  
-          <!-- BODY -->
-          <div class="modal-body">
-  
-            <div class="row g-3">
-  
-              <div class="col-md-6">
-                  <label class="form-label">Rol<small style="color: red;">*</small></label>
-                  <select class="form-select"
-                        [(ngModel)]="form.rol"
-                        [disabled]="modoDetalle">
-                  <option value="" disabled>Seleccione...</option>
-                  @for (rol of roles; track rol) {
-                    <option [value]="rol">{{ rol }}</option>
-                  }
-                </select>
-              </div>
-  
-              <div class="col-md-6">
-                <label class="form-label">Tipo Identificación<small style="color: red;">*</small></label>
-                <select class="form-select"
-                        [(ngModel)]="form.tipoIdentificacion"
-                        [disabled]="modoDetalle">
-                  <option value="" disabled>Seleccione...</option>
-                  @for (tipo of tiposIdentificacion; track tipo) {
-                    <option [value]="tipo">{{ tipo }}</option>
-                  }
-                </select>
-              </div>
-  
-              <div class="col-md-6">
-                <label class="form-label">Identificación<small style="color: red;">*</small></label>
-                <input type="number"
-                       class="form-control"
-                       [(ngModel)]="form.identificacion"
-                       [disabled]="modoDetalle"
-                       min="0">
-              </div>
-  
-              <div class="col-md-6">
-                <label class="form-label">Nombre<small style="color: red;">*</small></label>
-                <input type="text"
-                       class="form-control"
-                       [(ngModel)]="form.nombre"
-                       [disabled]="modoDetalle">
-              </div>
-  
-              <div class="col-md-6">
-                <label class="form-label">Apellido<small style="color: red;">*</small></label>
-                <input type="text"
-                       class="form-control"
-                       [(ngModel)]="form.apellido"
-                       [disabled]="modoDetalle">
-              </div>
-  
-              <div class="col-md-6">
-                <label class="form-label">Correo<small style="color: red;">*</small></label>
-                <input type="email"
-                       class="form-control"
-                       [(ngModel)]="form.correo"
-                       [disabled]="modoDetalle">
-              </div>
-  
-              <div class="col-md-6">
-                <label class="form-label">Celular<small style="color: red;">*</small></label>
-                <input type="text"
-                       class="form-control"
-                       [(ngModel)]="form.celular"
-                       [disabled]="modoDetalle">
-              </div>
-  
-              <div class="col-md-6">
-                <label class="form-label">Usuario<small style="color: red;">*</small></label>
-                <input type="text"
-                       class="form-control"
-                       [(ngModel)]="form.usuario"
-                       [disabled]="modoDetalle || editId !== null">
-              </div>
-  
-              <!-- SOLO EN CREACIÓN -->
-              @if (!modoDetalle && editId === null) {
-                <div class="col-md-6">
-                  <label class="form-label">Clave Generada</label>
-                  <input type="text"
-                         class="form-control"
-                         [value]="form.clave"
-                         disabled>
-                </div>
+                        [class.bg-danger]="usuario.estado === 'Inactivo'"
+                      >
+                        {{ usuario.estado }}
+                      </span>
+                    </td>
+                    <td>{{ usuario.usuarioCreador }}</td>
+                    <td>{{ usuario.fechaCreacion }}</td>
+                    <td class="text-center">
+                      <div class="acciones-wrapper">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary"
+                          title="Ver información"
+                          (click)="abrirDetalle(usuario)"
+                        >
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        @if (usuario.estadoActivo) {
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            title="Editar"
+                            (click)="abrirEditar(usuario)"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-warning"
+                            [disabled]="accionUsuarioId === usuario.id"
+                            title="Inactivar"
+                            (click)="activarDesactivar(usuario)"
+                          >
+                            @if (accionUsuarioId === usuario.id) {
+                              <span
+                                class="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            } @else {
+                              <i class="bi bi-toggle-on"></i>
+                            }
+                          </button>
+                        } @else {
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-success"
+                            [disabled]="accionUsuarioId === usuario.id"
+                            title="Activar"
+                            (click)="activarDesactivar(usuario)"
+                          >
+                            @if (accionUsuarioId === usuario.id) {
+                              <span
+                                class="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            } @else {
+                              <i class="bi bi-check-lg"></i>
+                            }
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
               }
-  
+            </tbody>
+          </table>
+        </div>
+
+        @if (mostrarBarraPaginacion) {
+          <div class="card-footer bg-white usuarios-pagination-footer">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap w-100">
+              <div class="d-flex align-items-center gap-2 usuarios-pagination-page-size">
+                <label class="small text-muted mb-0" for="usuariosTamanoPagina">Por página</label>
+                <select
+                  id="usuariosTamanoPagina"
+                  class="form-select form-select-sm usuarios-page-size-select"
+                  [(ngModel)]="itemsPorPagina"
+                  (ngModelChange)="onTamanoPaginaChange()"
+                >
+                  @for (n of tamanoPaginaOpciones; track n) {
+                    <option [ngValue]="n">{{ n }}</option>
+                  }
+                </select>
+              </div>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
+                <span class="small text-muted">
+                  {{ usuariosFiltrados.length }} registro(s) · Página {{ paginaActual }} de {{ totalPaginas }}
+                </span>
+                @if (hayMultiplesPaginas) {
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual <= 1"
+                      (click)="irPagina(paginaActual - 1)"
+                      aria-label="Anterior"
+                    >
+                      <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [disabled]="paginaActual >= totalPaginas"
+                      (click)="irPagina(paginaActual + 1)"
+                      aria-label="Siguiente"
+                    >
+                      <i class="bi bi-chevron-right"></i>
+                    </button>
+                  </div>
+                }
+              </div>
             </div>
           </div>
-  
-          <!-- FOOTER -->
-          <div class="modal-footer justify-content-center py-3">
-  
-            @if (!modoDetalle) {
-              <button type="button"
-                      class="btn btn-roles-primary px-4"
-                      (click)="guardar()">
-                <i class="bi bi-check-square"></i> Guardar
-              </button>
-            }
-  
-            <button type="button"
-                    class="btn btn-outline-danger px-4"
-                    data-bs-dismiss="modal">
-              <i class="bi bi-x-square"></i>
-              {{ modoDetalle ? 'Cerrar' : 'Cancelar' }}
+        }
+      }
+    }
+  </div>
+
+  <!-- Modal detalle -->
+  <div
+    class="modal fade"
+    id="modalUsuarioDetalle"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl usuarios-modal-detalle-dialog">
+      <div class="modal-content usuarios-modal-detalle">
+        @if (usuarioDetalle) {
+          <div class="modal-header modal-header-roles align-items-center gap-2">
+            <h5 class="modal-title text-white mb-0 flex-grow-1">Detalle del Usuario</h5>
+            <span class="badge rounded-pill px-3 py-2 bg-white text-dark usuarios-detalle-badge">
+              {{ usuarioDetalle.estado }}
+            </span>
+            <button
+              type="button"
+              class="btn btn-sm usuarios-modal-x"
+              aria-label="Cerrar"
+              (click)="cerrarModalDetalle()"
+            >
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
             </button>
-  
           </div>
-  
+          <div class="modal-body usuarios-detalle-body">
+            <div class="row g-4 mb-0">
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Rol</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.rolNombre }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Tipo de identificación</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.tipoIdentificacionNombre }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Número de identificación</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.numeroIdentificacion || '—' }}</div>
+              </div>
+            </div>
+            <div class="row g-4 mb-0">
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Nombre</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.nombre }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Apellido</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.apellido || '—' }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Contacto</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.celular || '—' }}</div>
+              </div>
+            </div>
+            <div class="row g-4 mb-0">
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Correo</div>
+                <div class="usuarios-detalle-valor text-break">{{ usuarioDetalle.correo }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Usuario</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.usuario }}</div>
+              </div>
+              <div class="col-md-4">
+                <div class="usuarios-detalle-label">Usuario creador</div>
+                <div class="usuarios-detalle-valor">{{ usuarioDetalle.usuarioCreador }}</div>
+              </div>
+            </div>
+            <div class="row g-4">
+              <div class="col-12">
+                <div class="usuarios-detalle-label">Fecha de creación</div>
+                <div class="usuarios-detalle-valor">
+                  {{ fechaCreacionLegible(usuarioDetalle.fechaCreacion) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0 justify-content-end">
+            <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalDetalle()">
+              Cerrar
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal crear / editar -->
+  <div
+    class="modal fade"
+    id="modalUsuarioForm"
+    tabindex="-1"
+    aria-labelledby="modalUsuarioFormLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header modal-header-roles d-flex align-items-center">
+          <h5 class="modal-title text-white mb-0" id="modalUsuarioFormLabel">{{ modalTitulo }}</h5>
+          <button
+            type="button"
+            class="btn btn-sm usuarios-modal-x ms-auto"
+            aria-label="Cerrar"
+            (click)="cerrarModalFormulario()"
+          >
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">
+                Rol
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <select
+                class="form-select"
+                [(ngModel)]="form.idRoles"
+                [compareWith]="compareById"
+              >
+                <option [ngValue]="null" disabled>Seleccione un rol</option>
+                @for (rol of roles; track rol.id) {
+                  <option [ngValue]="rol.id">{{ rol.nombre }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">
+                Tipo de identificación
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <select
+                class="form-select"
+                [(ngModel)]="form.idTipoIdentificacion"
+                [compareWith]="compareById"
+              >
+                <option [ngValue]="null" disabled>Seleccione tipo de identificación</option>
+                @for (tipo of tiposIdentificacion; track tipo.id) {
+                  <option [ngValue]="tipo.id">{{ tipo.nombre }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">
+                Número de identificación
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                type="number"
+                class="form-control"
+                step="1"
+                min="0"
+                [(ngModel)]="form.numeroIdentificacion"
+                placeholder="Ej: 1234567890"
+                autocomplete="off"
+              />
+              <div class="usuarios-char-counter small text-muted">
+                {{ longitudNumeroIdentificacionForm }} / {{ maxNumeroId }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">
+                Nombre
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                [attr.maxlength]="maxNombre"
+                [(ngModel)]="form.nombre"
+                placeholder="Ej: Juan Carlos"
+                autocomplete="given-name"
+              />
+              <div class="usuarios-char-counter small text-muted">
+                {{ form.nombre.length }} / {{ maxNombre }}
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">
+                Apellido
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                [attr.maxlength]="maxApellido"
+                [(ngModel)]="form.apellido"
+                placeholder="Ej: García López"
+                autocomplete="family-name"
+              />
+              <div class="usuarios-char-counter small text-muted">
+                {{ form.apellido.length }} / {{ maxApellido }}
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">
+                Contacto
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                type="number"
+                class="form-control"
+                step="1"
+                min="0"
+                [(ngModel)]="form.celular"
+                placeholder="Ej: 3001234567"
+                autocomplete="tel"
+              />
+              <div class="usuarios-char-counter small text-muted">
+                {{ longitudCelularForm }} / {{ maxCelular }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4" [class.col-md-6]="!esCreacion">
+              <label class="form-label">
+                Correo
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                type="email"
+                class="form-control"
+                [attr.maxlength]="maxCorreo"
+                [(ngModel)]="form.correo"
+                placeholder="Ej: correo@dominio.com"
+                autocomplete="email"
+              />
+              <div class="usuarios-char-counter small text-muted">
+                {{ form.correo.length }} / {{ maxCorreo }}
+              </div>
+            </div>
+            <div class="col-md-4" [class.col-md-6]="!esCreacion">
+              <label class="form-label">
+                Usuario de acceso
+                @if (esCreacion) {
+                  <small class="text-danger">*</small>
+                }
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                [attr.maxlength]="maxUsuario"
+                [(ngModel)]="form.usuario"
+                [disabled]="!esCreacion"
+                placeholder="Ej: juangarcia"
+                title="Solo se permiten letras. Recomendación: primer nombre y primer apellido. Ej: juangarcia"
+                autocomplete="username"
+              />
+              <div class="usuarios-char-counter small text-muted">
+                {{ form.usuario.length }} / {{ maxUsuario }}
+              </div>
+            </div>
+            @if (esCreacion) {
+              <div class="col-md-4">
+                <label class="form-label">
+                  Contraseña inicial
+                  <small class="text-danger">*</small>
+                </label>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control bg-light"
+                    name="claveGenerada"
+                    [(ngModel)]="form.clave"
+                    [ngModelOptions]="{ standalone: true }"
+                    readonly
+                    title="Esta es la contraseña de ingreso del usuario. Cópiela antes de guardar. Podrá restablecerla después."
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="regenerarClave()"
+                    title="Regenerar contraseña"
+                    aria-label="Regenerar contraseña"
+                  >
+                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="copiarClave()"
+                    title="Copiar contraseña"
+                    aria-label="Copiar contraseña"
+                  >
+                    <i class="bi bi-clipboard" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (saveError) {
+            <div class="alert alert-warning py-2 small mt-3 mb-0" role="alert">{{ saveError }}</div>
+          }
+        </div>
+
+        <div class="modal-footer justify-content-end py-3 border-top gap-2">
+          <button
+            type="button"
+            class="btn btn-roles-primary px-4"
+            (click)="guardar()"
+            [disabled]="savePending"
+          >
+            @if (savePending) {
+              <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            }
+            <i class="bi bi-check-square"></i> Guardar
+          </button>
+          <button type="button" class="btn btn-outline-danger px-4" (click)="cerrarModalFormulario()">
+            <i class="bi bi-x-square"></i> Cancelar
+          </button>
         </div>
       </div>
     </div>
-  
-  </main>
-  
+  </div>
+</main>

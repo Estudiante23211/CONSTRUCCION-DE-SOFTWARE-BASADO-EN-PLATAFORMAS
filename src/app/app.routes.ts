@@ -11,6 +11,20 @@ export const routes: Routes = [
         .then(m => m.Login)
   },
 
+  // 🔓 RECUPERACIÓN DE CONTRASEÑA (PÚBLICO)
+  {
+    path: 'auth/olvido-contrasena',
+    loadComponent: () =>
+      import('./pages/auth/forgot-password/forgot-password')
+        .then(m => m.ForgotPassword)
+  },
+  {
+    path: 'auth/restablecer-contrasena',
+    loadComponent: () =>
+      import('./pages/auth/reset-password/reset-password')
+        .then(m => m.ResetPassword)
+  },
+
   // 🔐 DASHBOARD
   {
     path: '',
@@ -101,15 +115,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/producto/productos/productos')
         .then(m => m.Productos)
-  },
-
-  // 🔐 PEDIDOS
-  {
-    path: 'pedidos/crear',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/pedidos/crear-pedido/crear-pedido')
-        .then(m => m.CrearPedido)
   },
 
   // 🔐 INVENTARIO

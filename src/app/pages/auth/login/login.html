@@ -17,12 +17,17 @@
       <form (ngSubmit)="iniciarSesion()" class="login-form">
         <div class="form-group">
           <label for="email">Nombre de usuario o Email</label>
-          <input type="email"
+          <input type="text"
             id="email"
-            placeholder="correo@ejemplo.com"
+            placeholder="correo@ejemplo.com o usuario"
             [(ngModel)]="email"
             name="email"
-            class="form-control">
+            class="form-control"
+            [class.is-invalid]="emailInvalid"
+            autocomplete="username">
+          @if (emailInvalid) {
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          }
         </div>
 
         <div class="form-group">
@@ -33,7 +38,8 @@
               placeholder="••••••••"
               [(ngModel)]="password"
               name="password"
-              class="form-control">
+              class="form-control"
+              [class.is-invalid]="passwordInvalid">
             <button type="button"
               class="password-toggle"
               (click)="showPassword = !showPassword"
@@ -41,10 +47,9 @@
               <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
             </button>
           </div>
-        </div>
-
-        <div class="forgot-password">
-          <a href="#" class="forgot-link">Olvidé mi contraseña</a>
+          @if (passwordInvalid) {
+            <div class="invalid-feedback d-block">Este campo es obligatorio.</div>
+          }
         </div>
 
         @if (error) {
@@ -53,7 +58,14 @@
           </div>
         }
 
-        <button type="submit" class="btn-login">
+        <div class="forgot-password">
+          <a routerLink="/auth/olvido-contrasena" class="forgot-link">¿Olvidé mi contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn-login" [disabled]="loginPending">
+          @if (loginPending) {
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+          }
           Iniciar Sesión
         </button>
       </form>
