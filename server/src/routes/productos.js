@@ -16,6 +16,7 @@ const listSqlWithCodigo = `SELECT p.IdProducto, p.Codigo, p.IdCategoria, p.Nombr
     c.Nombre AS CategoriaNombre,
     TRIM(CONCAT(COALESCE(u.Nombre, ''), ' ', COALESCE(u.Apellido, ''))) AS CreadorNombre,
     u.Correo AS CreadorCorreo,
+    inv_um.IdUnidadMedida,
     um.Nombre AS UnidadMedidaNombre
   FROM com__producto p
   LEFT JOIN com__categoria_producto c ON c.IdCategoria = p.IdCategoria
@@ -26,6 +27,7 @@ const listSqlNoCodigo = `SELECT p.IdProducto, p.IdCategoria, p.Nombre, p.Descrip
     c.Nombre AS CategoriaNombre,
     TRIM(CONCAT(COALESCE(u.Nombre, ''), ' ', COALESCE(u.Apellido, ''))) AS CreadorNombre,
     u.Correo AS CreadorCorreo,
+    inv_um.IdUnidadMedida,
     um.Nombre AS UnidadMedidaNombre
   FROM com__producto p
   LEFT JOIN com__categoria_producto c ON c.IdCategoria = p.IdCategoria
@@ -60,6 +62,7 @@ function mapProducto(row) {
     codigo: codigoDisplay(row),
     idCategoria: row.IdCategoria != null ? Number(row.IdCategoria) : null,
     categoriaNombre: String(row.CategoriaNombre || '').trim() || '—',
+    idUnidadMedida: row.IdUnidadMedida != null ? Number(row.IdUnidadMedida) : 0,
     unidadMedidaNombre: String(row.UnidadMedidaNombre || '').trim() || '—',
     nombre: row.Nombre != null ? String(row.Nombre) : '',
     descripcion: row.Descripcion != null ? String(row.Descripcion) : '',

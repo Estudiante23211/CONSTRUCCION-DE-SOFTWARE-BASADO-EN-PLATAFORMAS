@@ -1,0 +1,3 @@
+-- Obsoleto: la entrega se guarda solo en Fecha_entrega, Entregado_por y Recibido_por.
+-- Si su base aún tiene la columna EntregadoPorDescripcion, ejecute:
+--   database/drop_com__pedidos_detalle_entregado_por_descripcion.sql

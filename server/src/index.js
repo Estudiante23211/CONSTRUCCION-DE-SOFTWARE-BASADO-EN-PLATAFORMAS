@@ -8,6 +8,7 @@ import { usuariosRouter } from './routes/usuarios.js';
 import { buildClienteCatalogRouter } from './routes/clientesCatalogo.js';
 import { clientesRouter } from './routes/clientes.js';
 import { productosRouter } from './routes/productos.js';
+import { pedidosRouter } from './routes/pedidos.js';
 import { inventarioRouter } from './routes/inventario.js';
 
 dotenv.config();
@@ -60,6 +61,7 @@ app.use(
   buildClienteCatalogRouter(pool, 'com__categoria_producto', 'IdCategoria')
 );
 app.use('/api/productos/productos', productosRouter(pool));
+app.use('/api/pedidos', pedidosRouter(pool));
 app.use('/api/inventario', inventarioRouter(pool));
 
 app.listen(port, () => {

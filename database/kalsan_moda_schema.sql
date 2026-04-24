@@ -237,13 +237,13 @@ CREATE TABLE `com__pedidos_detalle` (
   `IdImpuesto` INT DEFAULT NULL,
   `Descripcion` VARCHAR(200) DEFAULT NULL,
   `Cantidad` INT DEFAULT NULL,
+  `IdUnidadMedida` INT DEFAULT NULL,
   `Medidas` TEXT,
   `PrecioUnitario` DECIMAL(10,2) DEFAULT NULL,
   `Descuento` DECIMAL(10,2) DEFAULT NULL,
   `Total` DECIMAL(10,2) DEFAULT NULL,
   `Fecha_entrega` DATETIME DEFAULT NULL,
   `Entregado_por` INT DEFAULT NULL,
-  `EntregadoPorDescripcion` VARCHAR(200) DEFAULT NULL,
   `Recibido_por` VARCHAR(200) DEFAULT NULL,
   `Observacion` VARCHAR(200) DEFAULT NULL,
   `UsuarioCreador` INT DEFAULT NULL,
@@ -255,6 +255,7 @@ CREATE TABLE `com__pedidos_detalle` (
   CONSTRAINT `fk_detalle_pedido` FOREIGN KEY (`IdPedido`) REFERENCES `com__pedidos` (`IdPedido`),
   CONSTRAINT `fk_detalle_producto` FOREIGN KEY (`IdProducto`) REFERENCES `com__producto` (`IdProducto`),
   CONSTRAINT `fk_detalle_impuesto` FOREIGN KEY (`IdImpuesto`) REFERENCES `bas__impuesto` (`IdImpuesto`),
+  CONSTRAINT `fk_detalle_unidad_medida` FOREIGN KEY (`IdUnidadMedida`) REFERENCES `bas__unidad_medida` (`IdUnidadMedida`),
   CONSTRAINT `fk_detalle_entregado` FOREIGN KEY (`Entregado_por`) REFERENCES `seg__usuario` (`IdUsuario`),
   CONSTRAINT `fk_detalle_usuario` FOREIGN KEY (`UsuarioCreador`) REFERENCES `seg__usuario` (`IdUsuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

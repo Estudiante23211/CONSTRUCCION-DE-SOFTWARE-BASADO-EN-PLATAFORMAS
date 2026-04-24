@@ -117,6 +117,15 @@ export const routes: Routes = [
         .then(m => m.Productos)
   },
 
+  // 🔐 PEDIDOS
+  {
+    path: 'pedidos/crear',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/pedidos/crear-pedido/crear-pedido')
+        .then(m => m.CrearPedido)
+  },
+
   // 🔐 INVENTARIO
   {
     path: 'inventario',

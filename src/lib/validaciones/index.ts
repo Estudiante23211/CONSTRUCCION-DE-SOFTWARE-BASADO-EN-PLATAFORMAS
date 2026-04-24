@@ -69,6 +69,13 @@ export {
   validarProductoDescripcionContenido,
 } from './producto.validaciones';
 export {
+  validarPedidoDescripcion,
+  validarPedidoMotivoCancelacion,
+  validarPedidoDescuentoPorcentaje,
+  validarPedidoCantidadCreacion,
+  validarPedidoPrecioUnitarioCreacion,
+} from './pedido.validaciones';
+export {
   validarClienteTipoClienteSeleccionCreacion,
   validarClienteCategoriaSeleccionCreacion,
   validarClienteTipoIdentificacionSeleccionCreacion,

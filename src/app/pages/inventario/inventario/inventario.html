@@ -93,6 +93,7 @@
                 <th>Unidad</th>
                 <th>Inicial</th>
                 <th>Actual</th>
+                <th>Estado stock</th>
                 <th>Alerta</th>
                 <th>Estado</th>
                 <th>Usuario creador</th>
@@ -103,7 +104,7 @@
             <tbody>
               @if (sinResultadosPorFiltro) {
                 <tr>
-                  <td colspan="9" class="text-center text-muted py-4">
+                  <td colspan="10" class="text-center text-muted py-4">
                     <i class="bi bi-funnel fs-1 d-block mb-2"></i>
                     No hay resultados para los filtros seleccionados.
                   </td>
@@ -114,10 +115,12 @@
                     <td class="fw-medium">{{ i.productoNombre }}</td>
                     <td>{{ i.unidadMedida }}</td>
                     <td>{{ i.cantidadInicial }}</td>
+                    <td>{{ i.cantidadActual }}</td>
                     <td>
-                      {{ i.cantidadActual }}
                       @if (stockBajo(i)) {
-                        <span class="badge bg-danger ms-2">Stock bajo</span>
+                        <span class="badge px-3 py-2 bg-danger">Stock bajo</span>
+                      } @else {
+                        <span class="badge px-3 py-2 bg-success">Normal</span>
                       }
                     </td>
                     <td>{{ i.alertaMinima }}</td>

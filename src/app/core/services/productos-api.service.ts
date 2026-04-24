@@ -33,6 +33,7 @@ export interface ProductoApiRow {
   codigo: string;
   idCategoria: number | null;
   categoriaNombre: string;
+  idUnidadMedida?: number;
   unidadMedidaNombre?: string;
   nombre: string;
   descripcion: string;
@@ -47,6 +48,7 @@ export interface ProductoPantalla {
   codigo: string;
   idCategoria: number | null;
   categoriaNombre: string;
+  idUnidadMedida: number;
   unidadMedidaNombre: string;
   nombre: string;
   descripcion: string;
@@ -69,11 +71,13 @@ function mapCatalogoPantalla(x: ProductoCatalogoApiItem): CatalogoProductoPantal
 }
 
 function mapProductoPantalla(p: ProductoApiRow): ProductoPantalla {
+  const idUm = p.idUnidadMedida != null && Number.isFinite(Number(p.idUnidadMedida)) ? Number(p.idUnidadMedida) : 0;
   return {
     id: p.id,
     codigo: p.codigo ?? '',
     idCategoria: p.idCategoria,
     categoriaNombre: p.categoriaNombre,
+    idUnidadMedida: idUm > 0 ? idUm : 0,
     unidadMedidaNombre: p.unidadMedidaNombre?.trim() ? String(p.unidadMedidaNombre).trim() : '—',
     nombre: p.nombre,
     descripcion: p.descripcion ?? '',
