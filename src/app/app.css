@@ -53,6 +53,12 @@
 
   .app-shell {
     min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .app-main {
+    min-width: 0;
+    transition: flex 0.25s ease;
   }
 
   main.login-main {
@@ -63,7 +69,7 @@
 
   main {
     padding: 30px 40px;
-    background: linear-gradient(180deg, #f8f9fa 0%, #eef1f5 100%);
+    background: var(--color-bg-app);
   }
 
   .angular-logo {
@@ -175,11 +181,7 @@
     }
     
     main {
-      background: linear-gradient(
-        135deg,
-        #f8f9fa,
-        #ffffff
-      );
+      background: var(--color-bg-app);
     }
     
   }

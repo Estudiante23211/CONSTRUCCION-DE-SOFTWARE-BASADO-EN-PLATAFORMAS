@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface UsuarioApi {
@@ -39,11 +39,21 @@ export interface UsuarioFormOptions {
 @Injectable({ providedIn: 'root' })
 export class UsuariosService {
   private readonly base = `${environment.apiUrl}/seguridad/usuarios`;
+  private formOptionsCache$?: Observable<UsuarioFormOptions>;
 
   constructor(private http: HttpClient) {}
 
   formOptions(): Observable<UsuarioFormOptions> {
-    return this.http.get<UsuarioFormOptions>(`${this.base}/form-options`);
+    if (!this.formOptionsCache$) {
+      this.formOptionsCache$ = this.http
+        .get<UsuarioFormOptions>(`${this.base}/form-options`)
+        .pipe(shareReplay(1));
+    }
+    return this.formOptionsCache$;
+  }
+
+  invalidateFormOptionsCache(): void {
+    this.formOptionsCache$ = undefined;
   }
 
   list(): Observable<UsuarioApi[]> {

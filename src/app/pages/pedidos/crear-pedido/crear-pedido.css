@@ -9,7 +9,7 @@
 }
 
 .btn-roles-primary:hover {
-  background-color: var(--color-accent);
+  background-color: var(--color-sidebar-dark);
   color: var(--color-light);
 }
 
@@ -21,7 +21,7 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6c757d;
+  color: var(--color-text-secondary);
 }
 
 .acciones-container {
@@ -42,7 +42,7 @@
 }
 
 .modal-header-roles {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-trust));
+  background: var(--color-sidebar-bg);
   color: var(--color-light);
 }
 
@@ -103,13 +103,13 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #868e96;
+  color: var(--color-text-secondary);
   margin-bottom: 0.35rem;
 }
 
 .pedidos-detalle-valor {
   font-weight: 600;
-  color: #212529;
+  color: var(--color-text-primary);
   font-size: 1rem;
 }
 
@@ -120,12 +120,12 @@
 
 .pedido-badge-estado.pedido-est-pendiente {
   background-color: #ffc107;
-  color: #212529;
+  color: var(--color-text-primary);
 }
 
 .pedido-badge-estado.pedido-est-proceso {
-  background-color: #0d6efd;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-bg-white);
 }
 
 .pedido-badge-estado.pedido-est-entregado {
@@ -142,7 +142,7 @@
   margin-top: 0.75rem;
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
-  border-top: 1px solid #dee2e6 !important;
+  border-top: 1px solid var(--color-border) !important;
 }
 
 .pedido-main .pedidos-pagination-footer .btn-sm {
@@ -160,5 +160,5 @@
 
 .pedido-main .modal-body input:disabled,
 .pedido-main .modal-body select:disabled {
-  background-color: #f1f3f5;
+  background-color: var(--color-bg-card);
 }

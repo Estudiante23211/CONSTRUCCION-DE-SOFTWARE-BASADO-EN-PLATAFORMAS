@@ -3,6 +3,7 @@ import { Router, RouterOutlet } from '@angular/router';
 
 import { Sidebar } from './core/layout/sidebar/sidebar';
 import { Footer } from './core/layout/footer/footer';
+import { AppToast } from './core/components/app-toast/app-toast';
 
 @Component({
   selector: 'app-root',
@@ -10,13 +11,15 @@ import { Footer } from './core/layout/footer/footer';
   imports: [
     RouterOutlet,
     Sidebar,
-    Footer
+    Footer,
+    AppToast,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   private router = inject(Router);
+  sidebarCollapsed = false;
 
   /** Rutas públicas de autenticación sin sidebar ni footer de la app. */
   get isAuthFullscreenRoute(): boolean {

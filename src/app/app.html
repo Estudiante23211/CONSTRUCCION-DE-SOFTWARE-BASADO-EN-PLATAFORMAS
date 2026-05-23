@@ -1,7 +1,11 @@
 <div class="app-wrapper" [class.d-flex]="!isAuthFullscreenRoute" [class.app-shell]="!isAuthFullscreenRoute">
+  <app-toast />
   @if (!isAuthFullscreenRoute) {
-    <app-sidebar></app-sidebar>
-    <div class="flex-grow-1 d-flex flex-column min-vh-100">
+    <app-sidebar (collapsedChange)="sidebarCollapsed = $event"></app-sidebar>
+    <div
+      class="app-main flex-grow-1 d-flex flex-column min-vh-100"
+      [class.app-main--expanded]="sidebarCollapsed"
+    >
       <main class="flex-fill p-3">
         <router-outlet></router-outlet>
       </main>

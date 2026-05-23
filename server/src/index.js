@@ -1,6 +1,6 @@
+import './loadEnv.js';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { createPool } from './db.js';
 import { authRouter } from './routes/auth.js';
 import { rolesRouter } from './routes/roles.js';
@@ -10,8 +10,6 @@ import { clientesRouter } from './routes/clientes.js';
 import { productosRouter } from './routes/productos.js';
 import { pedidosRouter } from './routes/pedidos.js';
 import { inventarioRouter } from './routes/inventario.js';
-
-dotenv.config();
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -23,7 +21,7 @@ let pool;
 try {
   pool = createPool();
 } catch (e) {
-  console.error('No se pudo crear el pool MySQL:', e);
+  console.error('[kalsan-api] No se pudo crear el pool MySQL:', e);
   process.exit(1);
 }
 
@@ -64,6 +62,56 @@ app.use('/api/productos/productos', productosRouter(pool));
 app.use('/api/pedidos', pedidosRouter(pool));
 app.use('/api/inventario', inventarioRouter(pool));
 
-app.listen(port, () => {
-  console.log(`API Kalsan escuchando en http://localhost:${port}`);
+async function start() {
+  if (!process.env.JWT_SECRET?.trim()) {
+    console.warn(
+      '[kalsan-api] JWT_SECRET vacío: se usa un secreto de desarrollo. Defínelo en server/.env para producción.'
+    );
+  }
+
+  try {
+    await pool.query('SELECT 1');
+    console.log(
+      `[kalsan-api] MySQL OK (${process.env.MYSQL_HOST || '127.0.0.1'}:${process.env.MYSQL_PORT || 3306}/${process.env.MYSQL_DATABASE || 'kalsan_moda'})`
+    );
+  } catch (e) {
+    console.error('[kalsan-api] No se pudo conectar a MySQL. El servidor NO arrancará.');
+    console.error('  - ¿MariaDB/MySQL está en ejecución?');
+    console.error('  - ¿Existe la base kalsan_moda? (database/kalsan_moda_schema.sql)');
+    console.error('  - Revisa server/.env (MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE)');
+    console.error('  Detalle:', e.message);
+    process.exit(1);
+  }
+
+  const server = app.listen(port, () => {
+    console.log(`[kalsan-api] API escuchando en http://localhost:${port}`);
+    console.log(`[kalsan-api] Health: http://localhost:${port}/api/health`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`[kalsan-api] Puerto ${port} en uso.`);
+      console.error(`  Ejecuta: netstat -ano | findstr :${port}`);
+      console.error('  Luego: taskkill /PID <número> /F');
+      process.exit(1);
+    }
+    console.error('[kalsan-api] Error al iniciar el servidor:', err);
+    process.exit(1);
+  });
+
+  const shutdown = (label) => {
+    server.close(() => {
+      console.log(`[kalsan-api] ${label}`);
+      process.exit(0);
+    });
+    setTimeout(() => process.exit(1), 5000).unref();
+  };
+
+  process.on('SIGTERM', () => shutdown('Servidor cerrado limpiamente'));
+  process.on('SIGINT', () => shutdown('Servidor detenido por usuario'));
+}
+
+start().catch((e) => {
+  console.error('[kalsan-api] Error fatal al iniciar:', e);
+  process.exit(1);
 });

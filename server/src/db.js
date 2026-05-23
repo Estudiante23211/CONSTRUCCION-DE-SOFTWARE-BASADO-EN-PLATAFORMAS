@@ -1,7 +1,5 @@
 import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import './loadEnv.js';
 
 export function createPool() {
   return mysql.createPool({

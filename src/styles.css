@@ -1,8 +1,285 @@
+/* Kalsan's Moda — paleta corporativa */
 :root {
-    --color-primary: #A64AC9;      /* Morado */
-    --color-accent: #D94FC5;       /* Rosa */
-    --color-trust: #1E4D91;        /* Azul */
-    --color-dark: #000000;        /* Negro */
-    --color-light: #FFFFFF;       /* Blanco */
+  --color-sidebar-bg: #0f1b4c;
+  --color-sidebar-dark: #1a2e6e;
+  --color-primary: #3b5bdb;
+  --color-primary-light: #6b8ef5;
+  --color-accent: #c44bdb;
+  --color-bg-app: #f8f9ff;
+  --color-bg-card: #eef2ff;
+  --color-bg-white: #ffffff;
+  --color-text-primary: #0f1b4c;
+  --color-text-secondary: #4a5568;
+  --color-border: #d0d9f5;
+
+  /* Alias legacy usados en componentes existentes */
+  --color-trust: var(--color-sidebar-dark);
+  --color-light: var(--color-bg-white);
+  --color-dark: var(--color-text-primary);
+
+  --focus-ring: 0 0 0 3px rgba(59, 91, 219, 0.15);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg-app);
+  color: var(--color-text-primary);
+}
+
+/* ——— Botones Bootstrap globales ——— */
+.btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-bg-white) !important;
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-primary:focus:not(:disabled) {
+  background-color: var(--color-sidebar-dark) !important;
+  border-color: var(--color-sidebar-dark) !important;
+  color: var(--color-bg-white) !important;
+}
+
+.btn-secondary {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  background-color: transparent !important;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-bg-card) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Botones de módulos CRUD */
+.btn-roles-primary {
+  background-color: var(--color-primary) !important;
+  color: var(--color-bg-white) !important;
+  border: none !important;
+}
+
+.btn-roles-primary:hover:not(:disabled) {
+  background-color: var(--color-sidebar-dark) !important;
+  color: var(--color-bg-white) !important;
+}
+
+.modal-header-roles {
+  background: var(--color-sidebar-bg) !important;
+  color: var(--color-bg-white) !important;
+}
+
+/* ——— Formularios ——— */
+.form-label,
+label {
+  color: var(--color-text-primary);
+}
+
+.form-control,
+.form-select {
+  border-color: var(--color-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* ——— Tablas ——— */
+.table thead.table-light th,
+.table thead th {
+  background: #ffffff !important;
+  color: #374151 !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e5e7eb !important;
+  padding: 10px 12px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.table-hover tbody tr:hover {
+  background: #f5f7ff !important;
+}
+
+.table th.col-actions,
+.table td.col-actions {
+  background: #ffffff;
+}
+
+.table-hover tbody tr:hover td.col-actions {
+  background: #f5f7ff;
+}
+
+/* Pie de tabla unificado */
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 10px 16px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 13px;
+  color: #6b7280;
+  background: #fff;
+}
+
+.table-footer .footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-footer .footer-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-footer .footer-right {
+  color: #374151;
+  font-weight: 500;
+}
+
+.table-footer .page-size-select {
+  width: auto;
+  min-width: 4.5rem;
+}
+
+/* ——— Badges ——— */
+.badge.bg-primary,
+.badge.text-bg-primary {
+  background-color: var(--color-bg-card) !important;
+  color: var(--color-primary) !important;
+}
+
+.badge-role,
+.badge-categoria {
+  background-color: var(--color-bg-card) !important;
+  color: var(--color-primary) !important;
+}
+
+/* ——— Cards ——— */
+.card {
+  background-color: var(--color-bg-white);
+  border-color: var(--color-border);
+}
+
+.card-header {
+  background-color: var(--color-bg-card);
+  border-bottom-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+/* ——— Footer ——— */
+footer.bg-dark {
+  background-color: var(--color-sidebar-bg) !important;
+}
+
+/* ——— Sidebar móvil (offcanvas) ——— */
+.offcanvas.bg-dark,
+.offcanvas.text-bg-dark {
+  background-color: var(--color-sidebar-bg) !important;
+}
+
+.sidebar-mobile-toggle {
+  background-color: var(--color-sidebar-bg) !important;
+  border-color: var(--color-sidebar-dark) !important;
+  color: var(--color-bg-white) !important;
+}
+
+.sidebar-mobile-toggle:hover {
+  background-color: var(--color-sidebar-dark) !important;
+  color: var(--color-bg-white) !important;
+}
+
+/* ——— Utilidades texto ——— */
+.text-muted {
+  color: var(--color-text-secondary) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.page-title,
+.module-title {
+  color: var(--color-text-primary);
+}
+
+/* ——— Formularios: feedback por campo ——— */
+.form-control.field-invalid,
+.form-select.field-invalid {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
+}
+
+.form-control.field-valid,
+.form-select.field-valid {
+  border-color: #28a745 !important;
+}
+
+.field-error-msg {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #dc3545;
+}
+
+/* ——— Tablas: skeleton, acciones fijas ——— */
+.table-skeleton tbody td {
+  padding: 0.65rem 0.75rem;
+}
+
+.table-skeleton .skeleton-bar {
+  display: block;
+  height: 0.85rem;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-card) 0%,
+    #fff 50%,
+    var(--color-bg-card) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
   }
-  
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.table-responsive--sticky-actions {
+  overflow-x: auto;
+}
+
+.table th.col-actions,
+.table td.col-actions {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: var(--color-bg-white);
+  box-shadow: -4px 0 8px rgba(15, 27, 76, 0.06);
+  min-width: 140px;
+}
+

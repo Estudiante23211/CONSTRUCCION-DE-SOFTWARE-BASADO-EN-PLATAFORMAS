@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -91,19 +91,31 @@ function mapProductoPantalla(p: ProductoApiRow): ProductoPantalla {
 @Injectable({ providedIn: 'root' })
 export class ProductosApiService {
   private readonly base = `${environment.apiUrl}/productos`;
+  private readonly catalogCache = new Map<RecursoCatalogoProducto, Observable<CatalogoProductoPantalla[]>>();
 
   constructor(private http: HttpClient) {}
 
   catalogList(recurso: RecursoCatalogoProducto): Observable<CatalogoProductoPantalla[]> {
-    return this.http
-      .get<ProductoCatalogoApiItem[]>(`${this.base}/${recurso}`)
-      .pipe(map((rows) => rows.map(mapCatalogoPantalla)));
+    let cached = this.catalogCache.get(recurso);
+    if (!cached) {
+      cached = this.http
+        .get<ProductoCatalogoApiItem[]>(`${this.base}/${recurso}`)
+        .pipe(map((rows) => rows.map(mapCatalogoPantalla)), shareReplay(1));
+      this.catalogCache.set(recurso, cached);
+    }
+    return cached;
+  }
+
+  invalidateCatalogCache(recurso?: RecursoCatalogoProducto): void {
+    if (recurso) this.catalogCache.delete(recurso);
+    else this.catalogCache.clear();
   }
 
   catalogCreate(
     recurso: RecursoCatalogoProducto,
     body: { nombre: string; descripcion?: string }
   ): Observable<CatalogoProductoPantalla> {
+    this.invalidateCatalogCache(recurso);
     return this.http
       .post<ProductoCatalogoApiItem>(`${this.base}/${recurso}`, body)
       .pipe(map(mapCatalogoPantalla));
@@ -114,6 +126,7 @@ export class ProductosApiService {
     id: number,
     body: { nombre?: string; descripcion?: string; estadoActivo?: boolean }
   ): Observable<CatalogoProductoPantalla> {
+    this.invalidateCatalogCache(recurso);
     return this.http
       .patch<ProductoCatalogoApiItem>(`${this.base}/${recurso}/${id}`, body)
       .pipe(map(mapCatalogoPantalla));

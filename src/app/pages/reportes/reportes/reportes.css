@@ -1,14 +1,23 @@
+.reportes-container h2,
+.reportes-container h5 {
+  color: var(--color-text-primary);
+}
+
 .kpi-card {
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  }
-  
-  canvas {
-    max-height: 300px;
-  }
-  
-  .card {
-    border-radius: 12px;
-  }
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 6px 20px rgba(15, 27, 76, 0.08);
+}
+
+canvas {
+  max-height: 300px;
+}
+
+.card {
+  border-radius: 12px;
+  border-color: var(--color-border);
+  background: var(--color-bg-white);
+}

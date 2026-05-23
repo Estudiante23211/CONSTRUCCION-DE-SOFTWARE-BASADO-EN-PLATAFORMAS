@@ -10,32 +10,28 @@
 }
 
 .btn-roles-primary:hover {
-  background-color: var(--color-accent);
+  background-color: var(--color-sidebar-dark);
   color: var(--color-light);
 }
 
 .modal-header-roles {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-trust)
-  );
+  background: var(--color-sidebar-bg);
   color: var(--color-light);
 }
 
 .unidad-medida-main .table-hover tbody tr:hover {
-  background-color: rgba(166, 74, 201, 0.08);
+  background-color: rgba(59, 91, 219, 0.08);
 }
 
 .card-header {
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .table thead th {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6c757d;
+  color: var(--color-text-secondary);
 }
 
 .table tbody td {
@@ -43,7 +39,7 @@
 }
 
 .modal-footer {
-  border-top: 1px solid #f1f1f1;
+  border-top: 1px solid var(--color-border);
 }
 
 .unidad-medida-main textarea {
@@ -66,13 +62,13 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #868e96;
+  color: var(--color-text-secondary);
   margin-bottom: 0.35rem;
 }
 
 .unidad-medida-detalle-valor {
   font-weight: 600;
-  color: #212529;
+  color: var(--color-text-primary);
   font-size: 1rem;
 }
 
@@ -94,7 +90,7 @@
   margin-top: 0.75rem;
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
-  border-top: 1px solid #dee2e6 !important;
+  border-top: 1px solid var(--color-border) !important;
 }
 
 .unidad-medida-main .unidad-medida-pagination-footer .btn-sm {

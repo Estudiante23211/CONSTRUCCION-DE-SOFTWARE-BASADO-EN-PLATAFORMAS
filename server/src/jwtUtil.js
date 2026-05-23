@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import './loadEnv.js';
 
 const jwtSecret = process.env.JWT_SECRET || 'dev-only-secret';
 

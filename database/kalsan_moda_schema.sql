@@ -282,13 +282,13 @@ INSERT INTO `seg__usuario` (
   (
     '1001', 1, 1,
     'Carlos', 'Admin', 'admin@test.com', NULL, 'admin',
-    '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    '$2b$10$.KINcFXBs6SsaX4qLC69LOAwExYINIfJSCph4CVjPqjR4Bx3elIhW',
     1, NULL, NOW()
   ),
   (
     '1002', 2, 1,
     'Ana', 'Ventas', 'ana@test.com', NULL, 'ana',
-    '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    '$2b$10$.KINcFXBs6SsaX4qLC69LOAwExYINIfJSCph4CVjPqjR4Bx3elIhW',
     1, NULL, NOW()
   );
 

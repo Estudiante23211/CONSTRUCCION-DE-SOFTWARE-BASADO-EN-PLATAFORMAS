@@ -196,49 +196,41 @@
         </div>
 
         @if (mostrarBarraPaginacion) {
-          <div class="card-footer bg-white tipo-moneda-pagination-footer">
-            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap w-100">
-              <div class="d-flex align-items-center gap-2 tipo-moneda-pagination-page-size">
-                <label class="small text-muted mb-0" for="tipoMonedaTamanoPagina">Por página</label>
-                <select
-                  id="tipoMonedaTamanoPagina"
-                  class="form-select form-select-sm tipo-moneda-page-size-select"
-                  [(ngModel)]="itemsPorPagina"
-                  (ngModelChange)="onTamanoPaginaChange()"
-                >
-                  @for (n of tamanoPaginaOpciones; track n) {
-                    <option [ngValue]="n">{{ n }}</option>
-                  }
-                </select>
-              </div>
-              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
-                <span class="small text-muted">
-                  {{ tiposMonedaFiltrados.length }} registro(s) · Página {{ paginaActual }} de {{ totalPaginas }}
-                </span>
-                @if (hayMultiplesPaginas) {
-                  <div class="d-flex align-items-center gap-2">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary"
-                      [disabled]="paginaActual <= 1"
-                      (click)="irPagina(paginaActual - 1)"
-                      aria-label="Anterior"
-                    >
-                      <i class="bi bi-chevron-left"></i>
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary"
-                      [disabled]="paginaActual >= totalPaginas"
-                      (click)="irPagina(paginaActual + 1)"
-                      aria-label="Siguiente"
-                    >
-                      <i class="bi bi-chevron-right"></i>
-                    </button>
-                  </div>
+          <div class="table-footer">
+            <div class="footer-left">
+              <span>Por página</span>
+              <select
+                class="form-select form-select-sm page-size-select"
+                [(ngModel)]="itemsPorPagina"
+                (ngModelChange)="onTamanoPaginaChange()"
+              >
+                @for (n of tamanoPaginaOpciones; track n) {
+                  <option [ngValue]="n">{{ n }}</option>
                 }
-              </div>
+              </select>
             </div>
+            <div class="footer-center">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="paginaActual <= 1"
+                (click)="irPagina(paginaActual - 1)"
+                aria-label="Anterior"
+              >
+                ‹
+              </button>
+              <span>{{ paginaActual }} / {{ totalPaginas }}</span>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="paginaActual >= totalPaginas"
+                (click)="irPagina(paginaActual + 1)"
+                aria-label="Siguiente"
+              >
+                ›
+              </button>
+            </div>
+            <div class="footer-right">{{ tiposMonedaFiltrados.length }} registro(s)</div>
           </div>
         }
       }

@@ -11,34 +11,30 @@
 }
 
 .btn-roles-primary:hover {
-  background-color: var(--color-accent);
+  background-color: var(--color-sidebar-dark);
   color: var(--color-light);
 }
 
 /* Encabezado del modal */
 .modal-header-roles {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-trust)
-  );
+  background: var(--color-sidebar-bg);
   color: var(--color-light);
 }
 
 /* Tabla: resaltar hover con tinte primario */
 .roles-main .table-hover tbody tr:hover {
-  background-color: rgba(166, 74, 201, 0.08);
+  background-color: rgba(59, 91, 219, 0.08);
 }
 
 .card-header {
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .table thead th {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6c757d;
+  color: var(--color-text-secondary);
 }
 
 .table tbody td {
@@ -46,7 +42,7 @@
 }
 
 .modal-footer {
-  border-top: 1px solid #f1f1f1;
+  border-top: 1px solid var(--color-border);
 }
 
 .roles-main textarea {
@@ -62,7 +58,7 @@
 
 .roles-main .modal-body input:disabled,
 .roles-main .modal-body textarea:disabled {
-  background-color: #f1f3f5;
+  background-color: var(--color-bg-card);
 }
 
 /* Detalle del rol (Tarea 1): solo texto, sin avatar */
@@ -75,13 +71,13 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #868e96;
+  color: var(--color-text-secondary);
   margin-bottom: 0.35rem;
 }
 
 .roles-detalle-valor {
   font-weight: 600;
-  color: #212529;
+  color: var(--color-text-primary);
   font-size: 1rem;
 }
 
@@ -105,7 +101,7 @@
   margin-top: 0.75rem;
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
-  border-top: 1px solid #dee2e6 !important;
+  border-top: 1px solid var(--color-border) !important;
 }
 
 .roles-main .roles-pagination-footer .btn-sm {

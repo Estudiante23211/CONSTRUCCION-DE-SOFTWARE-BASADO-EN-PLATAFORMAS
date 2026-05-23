@@ -1,8 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { finalize, timeout } from 'rxjs';
 import { RolesService, type RolApi } from '../../../core/services/roles.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { DebounceModelDirective } from '../../../core/directives/debounce-model.directive';
+import { type FieldErrors, fieldErrorsFromResults } from '../../../core/utils/form-errors';
 import {
   validarRolNombreCreacion,
   validarRolDescripcionCreacion,
@@ -18,7 +21,7 @@ type BootstrapModal = { show: () => void; hide: () => void };
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DebounceModelDirective],
   templateUrl: './roles.html',
   styleUrl: './roles.css',
 })
@@ -46,6 +49,8 @@ export class Roles implements OnInit {
   loadError = '';
   savePending = false;
   saveError = '';
+  fieldErrors: FieldErrors = {};
+  formSubmitted = false;
 
   paginaActual = 1;
   /** Tamaño de página (selector Tarea 1). */
@@ -59,8 +64,16 @@ export class Roles implements OnInit {
 
   constructor(
     private rolesService: RolesService,
+    private toast: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  get puedeGuardar(): boolean {
+    if (this.savePending) return false;
+    const n = this.rolForm.nombre.trim();
+    const d = this.rolForm.descripcion.trim();
+    return n.length > 0 && d.length > 0;
+  }
 
   ngOnInit(): void {
     this.cargarRoles();
@@ -192,10 +205,12 @@ export class Roles implements OnInit {
   cargarRoles(): void {
     this.loadError = '';
     this.loadPending = true;
+    this.rolesService.invalidateListCache();
     this.cdr.detectChanges();
     this.rolesService
       .list()
       .pipe(
+        timeout({ first: 15000 }),
         finalize(() => {
           this.loadPending = false;
           this.listLoaded = true;
@@ -222,6 +237,8 @@ export class Roles implements OnInit {
     this.modoFormulario = 'crear';
     this.rolEditandoId = null;
     this.saveError = '';
+    this.fieldErrors = {};
+    this.formSubmitted = false;
     this.rolForm = { nombre: '', descripcion: '' };
     setTimeout(() => this.showModal('modalRol'), 0);
   }
@@ -237,6 +254,8 @@ export class Roles implements OnInit {
     this.modoFormulario = 'editar';
     this.rolEditandoId = rol.id;
     this.saveError = '';
+    this.fieldErrors = {};
+    this.formSubmitted = false;
     this.rolFormInicial = {
       nombre: rol.nombre,
       descripcion: rol.descripcion ?? '',
@@ -264,6 +283,9 @@ export class Roles implements OnInit {
           const ix = this.roles.findIndex((r) => r.id === rol.id);
           if (ix >= 0) this.roles[ix] = updated;
           this.roles = [...this.roles];
+          this.toast.success(
+            updated.estadoActivo ? 'Rol activado correctamente' : 'Rol inactivado correctamente'
+          );
         },
         error: (err) => {
           const msg = err?.error?.message;
@@ -277,16 +299,18 @@ export class Roles implements OnInit {
 
   guardar(): void {
     this.saveError = '';
+    this.formSubmitted = true;
+    this.fieldErrors = {};
 
     if (this.modoFormulario === 'crear') {
       const vNombre = validarRolNombreCreacion(this.rolForm.nombre);
-      if (!vNombre.valido) {
-        this.saveError = vNombre.mensaje;
-        return;
-      }
       const vDesc = validarRolDescripcionCreacion(this.rolForm.descripcion);
-      if (!vDesc.valido) {
-        this.saveError = vDesc.mensaje;
+      this.fieldErrors = fieldErrorsFromResults([
+        { field: 'nombre', result: vNombre },
+        { field: 'descripcion', result: vDesc },
+      ]);
+      if (Object.keys(this.fieldErrors).length) {
+        this.saveError = Object.values(this.fieldErrors)[0];
         return;
       }
     } else {
@@ -304,13 +328,13 @@ export class Roles implements OnInit {
         return;
       }
       const vNombre = validarRolNombreContenido(this.rolForm.nombre);
-      if (!vNombre.valido) {
-        this.saveError = vNombre.mensaje;
-        return;
-      }
       const vDesc = validarRolDescripcionContenido(this.rolForm.descripcion);
-      if (!vDesc.valido) {
-        this.saveError = vDesc.mensaje;
+      this.fieldErrors = fieldErrorsFromResults([
+        { field: 'nombre', result: vNombre },
+        { field: 'descripcion', result: vDesc },
+      ]);
+      if (Object.keys(this.fieldErrors).length) {
+        this.saveError = Object.values(this.fieldErrors)[0];
         return;
       }
     }
@@ -322,6 +346,7 @@ export class Roles implements OnInit {
       this.modoFormulario === 'editar' ? this.rolEditandoId : null
     );
     if (!vUnico.valido) {
+      this.fieldErrors = { nombre: vUnico.mensaje };
       this.saveError = vUnico.mensaje;
       return;
     }
@@ -342,6 +367,7 @@ export class Roles implements OnInit {
 
     req$
       .pipe(
+        timeout({ first: 15000 }),
         finalize(() => {
           this.savePending = false;
           this.cdr.detectChanges();
@@ -354,8 +380,10 @@ export class Roles implements OnInit {
             if (ix >= 0) this.roles[ix] = saved;
             this.roles = [...this.roles];
             this.rolEditandoId = null;
+            this.toast.success('Rol actualizado correctamente');
           } else {
             this.roles = [...this.roles, saved];
+            this.toast.success('Rol creado correctamente');
           }
           this.cdr.detectChanges();
           this.cerrarModalFormulario();
@@ -389,6 +417,8 @@ export class Roles implements OnInit {
 
   cerrarModalFormulario(): void {
     this.saveError = '';
+    this.fieldErrors = {};
+    this.formSubmitted = false;
     this.hideModal('modalRol');
   }
 

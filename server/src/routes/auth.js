@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { getSessionUserId } from '../jwtUtil.js';
 import {
   validatePasswordShape,
   buildForbiddenFragments,
@@ -20,9 +21,11 @@ export function authRouter(pool) {
 
     try {
       const [rows] = await pool.query(
-        `SELECT IdUsuario, Correo, Usuario, NumeroIdentificacion, Clave, Estado
-         FROM seg__usuario
-         WHERE (Correo = ? OR Usuario = ? OR NumeroIdentificacion = ?)
+        `SELECT u.IdUsuario, u.Correo, u.Usuario, u.NumeroIdentificacion, u.Clave, u.Estado,
+                u.Nombre, u.Apellido, r.Nombre AS RolNombre
+         FROM seg__usuario u
+         LEFT JOIN seg__roles r ON r.IdRoles = u.IdRoles
+         WHERE (u.Correo = ? OR u.Usuario = ? OR u.NumeroIdentificacion = ?)
          LIMIT 1`,
         [login, login, login]
       );
@@ -59,12 +62,25 @@ export function authRouter(pool) {
       }
 
       const token = jwt.sign(
-        { sub: row.IdUsuario, typ: 'session' },
+        {
+          sub: row.IdUsuario,
+          typ: 'session',
+          nombre: row.Nombre ?? '',
+          apellido: row.Apellido ?? '',
+          rol: row.RolNombre ?? '',
+        },
         jwtSecret,
         { expiresIn: '8h' }
       );
 
-      return res.json({ token });
+      return res.json({
+        token,
+        usuario: {
+          nombre: row.Nombre ?? '',
+          apellido: row.Apellido ?? '',
+          rolNombre: row.RolNombre ?? '—',
+        },
+      });
     } catch (e) {
       console.error(e);
       return res.status(500).json({ message: 'Error del servidor' });
@@ -171,6 +187,36 @@ export function authRouter(pool) {
     } catch (e) {
       console.error(e);
       return res.status(500).json({ message: 'Error del servidor' });
+    }
+  });
+
+  r.get('/me', async (req, res) => {
+    const uid = getSessionUserId(req);
+    if (uid == null) {
+      return res.status(401).json({ message: 'No autorizado' });
+    }
+    try {
+      const [rows] = await pool.query(
+        `SELECT u.IdUsuario, u.Nombre, u.Apellido, u.Correo, u.Usuario, u.Celular,
+                r.Nombre AS Rol
+         FROM seg__usuario u
+         LEFT JOIN seg__roles r ON u.IdRoles = r.IdRoles
+         WHERE u.IdUsuario = ?`,
+        [uid]
+      );
+      if (!rows.length) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+      const row = rows[0];
+      return res.json({
+        ...row,
+        nombre: row.Nombre ?? '',
+        apellido: row.Apellido ?? '',
+        rolNombre: row.Rol ?? '—',
+      });
+    } catch (err) {
+      console.error('[auth/me]', err);
+      return res.status(500).json({ message: 'Error al obtener perfil' });
     }
   });
 
